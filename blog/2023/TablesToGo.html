@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Datenbanktabellen als Go-Struct abbilden</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+              </ul>
+            </li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>Datenbanktabellen als Go-Struct abbilden</h1>
+	</div>
+
+	<p><em>15 Oktober 2023</em></p>
+
+	<p><div class="paragraph">
+<p>Standardvorgehen, um Datenbank-Daten mit Go zu lesen oder zu schreiben ist die Benutzung des <a href="https://pkg.go.dev/database/sql">database/sql</a> Package. Selects werden in der Regel, d.h. wenn es sich nicht um einen einzelnen Spaltenwert handelt mit einem "<em>struct</em>" oder einer Liste von "<em>structs</em>" verarbeitet. <br>
+Ein "<em>struct</em>" bildet dabei jeweils eine Datenbanktabelle ab. Es ist mühsam und fehleranfällig, "<em>structs</em>" für jede Tabelle manuell zu pflegen.</p>
+</div>
+<div class="sect2">
+<h3 id="tables_to_go">Tables-To-Go</h3>
+<div class="paragraph">
+<p><a href="https://github.com/fraenky8/tables-to-go">Tables-To-Go</a> kann <em>structs</em> reverse aus einem vorhandenen Datenbankmodell erstellen. Dies funktioniert mit <a href="https://www.mysql.com">MySQL</a>, <a href="https://www.postgresql.org/">Posstgres</a> und (über einen im Repository beschriebenen Umweg, d.h. Klonen des Repositories und Ausführen von "<em> make sqlite3</em>" auch) mit <a href="https://www.sqlite.org/index.html">SQLite</a>.</p>
+</div>
+<div class="sect3">
+<h4 id="setup">Setup</h4>
+<div class="paragraph">
+<p><a href="https://github.com/fraenky8/tables-to-go">Tables-To-Go</a> lässt sich mit diesem Befehl installieren:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">go <span class="nb">install </span>github.com/fraenky8/tables-to-go@latest</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Nach der Installation mit "<em>go install</em>" oder "<em>make sqlite3</em>" steht eine ausführbare Datei "tables-to-go" im Verzeichnis "~/go/bin" bereit"</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="verwendung_mit_postgres">Verwendung mit Postgres</h4>
+<div class="paragraph">
+<p>Die <em>structs</em> für alle Tabellen einer Datenbank lassen sich für Postgres (dem Standardfall) mit folgendem Befehl erstellen</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">tables-to-go <span class="nt">-h</span> &lt;ip der Datenbank&gt; <span class="nt">-d</span> &lt;DB-Name&gt; <span class="nt">-u</span> &lt;Benutzer&gt; <span class="nt">-p</span> &lt;Passwort&gt; <span class="nt">-pn</span> &lt;Go-Paketname&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>oder mit weiteren <a href="https://github.com/fraenky8/tables-to-go#command-line-flags">Parametern</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">tables-to-go <span class="nt">-v</span> <span class="nt">-t</span> pg <span class="nt">-h</span> &lt;ip der Datenbank&gt; <span class="nt">-port</span> &lt;DB-Port&gt; <span class="nt">-d</span> &lt;DB-Name&gt; <span class="nt">-u</span> &lt;Benutzer&gt; <span class="nt">-p</span> &lt;Passwort&gt; <span class="nt">-pn</span> &lt;Go-Paketname&gt; <span class="nt">-pre</span> &lt;Prefix&gt; <span class="nt">-suf</span> &lt;Postfix&gt; <span class="nt">-of</span> &lt;Ausgabeverzeichnis&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="verwendung_mit_sqlite3">Verwendung mit SQLite3</h4>
+<div class="paragraph">
+<p>Die <em>structs</em> für alle Tabellen einer Datenbank lassen sich für SQLite3 mit folgendem Befehl erstellen</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">tables-to-go <span class="nt">-v</span> <span class="nt">-t</span> sqlite3 <span class="nt">-d</span> &lt;..Pfad/zur/Datenbank/dbname.sqlite&gt; <span class="nt">-of</span> &lt;Ausgabeverzeichnis&gt; <span class="nt">-suf</span> &lt;Postfix&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="beispiel">Beispiel</h4>
+<div class="paragraph">
+<p>Die Tabelle "<em>app_user</em>" in einer Postgres-Datenbank sieht folgendermaßen aus:</p>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="/image/2023/go/tablesToGo_01.png" alt="DB-Tabelle" width="250">
+</div>
+</div>
+<div class="paragraph">
+<p>Der Befehl:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">tables-to-go <span class="nt">-v</span> <span class="nt">-t</span> pg <span class="nt">-h</span> localhost <span class="nt">-port</span> 15432 <span class="nt">-d</span> mp3 <span class="nt">-u</span> psqladmin <span class="nt">-p</span> postgres <span class="nt">-pn</span> model <span class="nt">-suf</span> _entity <span class="nt">-of</span> model</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>erzeugt das "<em>struct</em>" "<em>AppUserEntity</em>" im Unterverzeichnis "<em>model</em>" (Das Verzeichnis muss bereits existieren).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="go"><span class="k">package</span> <span class="n">model</span>
+
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"database/sql"</span>
+	<span class="s">"time"</span>
+<span class="p">)</span>
+
+<span class="k">type</span> <span class="n">AppUserEntity</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">ID</span>        <span class="kt">int</span>            <span class="s">`db:"id"`</span>
+	<span class="n">UserCode</span>  <span class="kt">string</span>         <span class="s">`db:"user_code"`</span>
+	<span class="n">LastName</span>  <span class="kt">string</span>         <span class="s">`db:"last_name"`</span>
+	<span class="n">FirstName</span> <span class="n">sql</span><span class="o">.</span><span class="n">NullString</span> <span class="s">`db:"first_name"`</span>
+	<span class="n">Email</span>     <span class="kt">string</span>         <span class="s">`db:"email"`</span>
+	<span class="n">Password</span>  <span class="kt">string</span>         <span class="s">`db:"password"`</span>
+	<span class="n">Role</span>      <span class="n">sql</span><span class="o">.</span><span class="n">NullString</span> <span class="s">`db:"role"`</span>
+	<span class="n">Enabled</span>   <span class="n">sql</span><span class="o">.</span><span class="n">NullBool</span>   <span class="s">`db:"enabled"`</span>
+	<span class="n">Created</span>   <span class="n">time</span><span class="o">.</span><span class="n">Time</span>      <span class="s">`db:"created"`</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div></p>
+
+	<hr />
+	
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

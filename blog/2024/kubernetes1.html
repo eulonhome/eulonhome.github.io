@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Kubernetes Entwicklungsumgebung mit Minikube</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+              </ul>
+            </li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>Kubernetes Entwicklungsumgebung mit Minikube</h1>
+	</div>
+
+	<p><em>10 Februar 2024</em></p>
+
+	<p><div class="sect1">
+<h2 id="definitionen_und_links">Definitionen und Links</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://kubernetes.io">Kubernetes</a> (K8s) ist ein Open-Source-System zur Automatisierung der Bereitstellung, Skalierung und Verwaltung von containerisierten Anwendungen.</p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/">"kubectl"</a> ist die Kommandozeilen-Applikation zur Verwaltung eines Kubernetes-Clusters.</p>
+</li>
+<li>
+<p><a href="https://minikube.sigs.k8s.io/docs/">Minikube</a> stellt einen lokalen Kubernetes Cluster zur lokalen Entwicklung zur Verfügung.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="setup">Setup</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>(<em>Die Überschriften der einzelnen Listings sind Links auf die entsprechenden Kubernetes-Seiten</em>)</p>
+</div>
+<div class="listingblock">
+<div class="title"><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/">kubectl - Debian - Repository</a></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>apt-get update
+<span class="c"># apt-transport-https may be a dummy package; if so, you can skip that package</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> apt-transport-https ca-certificates curl
+
+<span class="c"># Download the public signing key for the Kubernetes package repositories. The same signing key is used for all repositories so you can disregard the version in the URL:</span>
+
+<span class="c"># If the folder `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.</span>
+<span class="c"># sudo mkdir -p -m 755 /etc/apt/keyrings</span>
+
+curl <span class="nt">-fsSL</span> https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | <span class="nb">sudo </span>gpg <span class="nt">--dearmor</span> <span class="nt">-o</span> /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+<span class="c"># Update apt package index, then install kubectl:</span>
+
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> kubectl</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title"><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-bash-completion">kubectl - bash - autocompletion</a></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">apt-get <span class="nb">install </span>bash-completion
+<span class="nb">source</span> /usr/share/bash-completion/bash_completion</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title"><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-bash-completion">kubectl - bash - enable autocompletion - user</a></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nb">echo</span> <span class="s1">'source &lt;(kubectl completion bash)'</span> <span class="o">&gt;&gt;</span>~/.bashrc
+
+<span class="c"># Wenn es keinen alias gibt:</span>
+<span class="nb">echo</span> <span class="s1">'alias k=kubectl'</span> <span class="o">&gt;&gt;</span>~/.bashrc
+
+<span class="c"># Wenn der alias angelegt ist</span>
+<span class="nb">echo</span> <span class="s1">'complete -o default -F __start_kubectl k'</span> <span class="o">&gt;&gt;</span>~/.bashrc
+
+<span class="nb">source</span> ~/.bashrc</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title"><a href="https://minikube.sigs.k8s.io/docs/start/">Minikube - Installation - Debian</a></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">curl <span class="nt">-LO</span> https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+<span class="nb">sudo </span>dpkg <span class="nt">-i</span> minikube_latest_amd64.deb</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title"><a href="https://minikube.sigs.k8s.io/docs/start/">Minikube - start - stop cluster</a></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">minikube start
+
+minikube stop</code></pre>
+</div>
+</div>
+</div>
+</div></p>
+
+	<hr />
+	
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

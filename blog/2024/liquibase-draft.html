@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Datenbanken mit Liquibase erstellen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+              </ul>
+            </li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>Datenbanken mit Liquibase erstellen</h1>
+	</div>
+
+	<p><em>17 Februar 2024</em></p>
+
+	<p><div class="sect1">
+<h2 id="datenbanken_mit_liquibase_erstellen">Datenbanken mit <a href="https://www.liquibase.org/">Liquibase</a> erstellen</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Liquibase ist eine Open-Source-Lösung zur Verwaltung von Datenbankschemata.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Entwurf und Änderungen eines Datenbankschemas werden in Form von YML- oder XML-Dateien durchgeführt.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Diese Dateien sind die Quelle, aus der Liquibase Datenbanken für mehr als 50 verschiedene Datenbanksyteme erstellen oder ändern kann.</p>
+</li>
+<li>
+<p>Änderungen bestehender, mit Liquibase erstellter Datenbanken lassen sich durch Verarbeitung dieser leicht zu versionierenden und in DevOps-Pipelines verwendbaren Dateien über Systemgrenzen hinweg ausrollen.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Datenbanken sind leicht versions-synchron zu halten, deren Schemata sind leicht zu duplizieren oder wiederherzustellen.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="todo">ToDo</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="aufgabenstellung">Aufgabenstellung</h3>
+<div class="paragraph">
+<p>Die von einem Wechselrichter protokollierten Messdaten einer Photovoltaikanlage
+werden aus exportierten CSV-Protokolldateien extrahiert und in eine relationale
+Datenbank übertragen.
+Die Datenbank wird mit Liquibase erstellt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="definition_der_datenbanktabellen">Definition der Datenbanktabellen</h3>
+<div class="sect3">
+<h4 id="diagramm_der_verwendeten_tabellen">Diagramm der verwendeten Tabellen</h4>
+<div class="listingblock">
+<div class="content">
+<pre>@startuml
+skinparam monochrome true
+skinparam componentStyle uml2
+
+class mesurement_data {
+id int,
+measure_date char(10)
+production_amount decimal(10,3)
+production_day decimal(6,3)
+mesurement_unit_id int
+}
+
+class mesurement_unit {
+id int,
+name varchar(50)
+model varchar(50)
+serial_number varchar(50)
+unit_identifier varchar(50)
+unit_identifier_line int
+first_line_to_read int
+column_date int
+colum_date_format varchar(10)
+column_value int
+column_amount int
+}
+
+class mesurement_log {
+id int
+timestamp timestamp
+filename varchar(50)
+success boolean
+comment varchar(128)
+mesurement_unit_id int
+}
+
+mesurement_unit "0..*" -- "1..1" mesurement_data
+mesurement_unit "0..*" -- "1..1" mesurement_log
+@enduml</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="liquibase_xml_changelog">Liquibase XML Changelog</h4>
+<div class="sect4">
+<h5 id="measurement_data">"measurement_data"</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;databaseChangeLog</span> <span class="na">xmlns=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog"</span>
+   <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+   <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog
+ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;changeSet</span> <span class="na">id=</span><span class="s">"2"</span> <span class="na">author=</span><span class="s">"CTi"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;createTable</span> <span class="na">tableName=</span><span class="s">"measurement_data"</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"id"</span> <span class="na">type=</span><span class="s">"int"</span> <span class="na">autoIncrement=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">primaryKey=</span><span class="s">"true"</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"measure_date"</span> <span class="na">type=</span><span class="s">"varchar(10)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"production_amount"</span> <span class="na">type=</span><span class="s">"decimal(10,3)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"production_day"</span> <span class="na">type=</span><span class="s">"decimal(6,3)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"measurement_unit_id"</span> <span class="na">type=</span><span class="s">"int"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="na">foreignKeyName=</span><span class="s">"fk_measurement_data_unit"</span>
+               <span class="na">references=</span><span class="s">"measurement_unit(id)"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+       <span class="nt">&lt;/createTable&gt;</span>
+      <span class="nt">&lt;createIndex</span> <span class="na">indexName=</span><span class="s">"idx_data"</span> <span class="na">tableName=</span><span class="s">"measurement_data"</span>
+         <span class="na">unique=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"measure_date"</span> <span class="na">type=</span><span class="s">"varchar(10)"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/createIndex&gt;</span>
+   <span class="nt">&lt;/changeSet&gt;</span>
+<span class="nt">&lt;/databaseChangeLog&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="measurement_log">"measurement_log"</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;databaseChangeLog</span> <span class="na">xmlns=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog"</span>
+   <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+   <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog
+ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;changeSet</span> <span class="na">id=</span><span class="s">"2"</span> <span class="na">author=</span><span class="s">"CTi"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;createTable</span> <span class="na">tableName=</span><span class="s">"measurement_log"</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"id"</span> <span class="na">type=</span><span class="s">"int"</span> <span class="na">autoIncrement=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">primaryKey=</span><span class="s">"true"</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"timestamp"</span> <span class="na">type=</span><span class="s">"timestamp"</span>
+            <span class="na">defaultValueComputed=</span><span class="s">"CURRENT_TIMESTAMP"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"filename"</span> <span class="na">type=</span><span class="s">"varchar(50)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"success"</span> <span class="na">type=</span><span class="s">"boolean"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"comment"</span> <span class="na">type=</span><span class="s">"varchar(128)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"measurement_unit_id"</span> <span class="na">type=</span><span class="s">"int"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="na">foreignKeyName=</span><span class="s">"fk_measurement_log_unit"</span>
+               <span class="na">references=</span><span class="s">"measurement_unit(id)"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+      <span class="nt">&lt;/createTable&gt;</span>
+   <span class="nt">&lt;/changeSet&gt;</span>
+<span class="nt">&lt;/databaseChangeLog&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="measurement_unit">"measurement_unit"</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;databaseChangeLog</span> <span class="na">xmlns=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog"</span>
+   <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+   <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog
+ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;changeSet</span> <span class="na">id=</span><span class="s">"1"</span> <span class="na">author=</span><span class="s">"CTi"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;createTable</span> <span class="na">tableName=</span><span class="s">"measurement_unit"</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"id"</span> <span class="na">type=</span><span class="s">"int"</span> <span class="na">autoIncrement=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">primaryKey=</span><span class="s">"true"</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"name"</span> <span class="na">type=</span><span class="s">"varchar(50)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"model"</span> <span class="na">type=</span><span class="s">"varchar(50)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"serial_number"</span> <span class="na">type=</span><span class="s">"varchar(50)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"unit_identifier"</span> <span class="na">type=</span><span class="s">"varchar(50)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"unit_identifier_line"</span> <span class="na">type=</span><span class="s">"int"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"first_line_to_read"</span> <span class="na">type=</span><span class="s">"int"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"column_date"</span> <span class="na">type=</span><span class="s">"int"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"column_date_format"</span> <span class="na">type=</span><span class="s">"varchar(10)"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"column_value"</span> <span class="na">type=</span><span class="s">"int"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+         <span class="nt">&lt;column</span> <span class="na">name=</span><span class="s">"column_amount"</span> <span class="na">type=</span><span class="s">"int"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;constraints</span> <span class="na">nullable=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;/column&gt;</span>
+      <span class="nt">&lt;/createTable&gt;</span>
+      <span class="nt">&lt;sqlFile</span> <span class="na">path=</span><span class="s">"load/measurement_unit.load.sql"</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;/changeSet&gt;</span>
+<span class="nt">&lt;/databaseChangeLog&gt;</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Der Wechselrichter (Unit) einer Photovoltaikanlage kann keinen oder beliebeig viele Messwerte erfassen. Jeder Messwert gehört zu einem Wechselrichter.</p>
+</li>
+<li>
+<p>Der Wechselrichter enthält Typeninformationen und zusätzliche Angaben, wie eine Protokolldatei einzulesen ist, um deren monatliche Messwerte richtig in die Datenbank übertragen zu können.</p>
+</li>
+<li>
+<p>Das Einlesen einer Datei wird protokolliert und gegebenenfalls kommentiert.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="definition_der_liquibase_changelog_dateien">Definition der Liquibase Changelog-Dateien</h4>
+<div class="paragraph">
+<p>Wie im Pom beschrieben wird nun eine Changelog-Datei photovoltaic.changelog im Verzeichnis src/main/sql/log angelegt. Diese inkludiert die oben beschriebenen Definitionen der einzelnen Datenbanktabellen.</p>
+</div>
+<div class="sect4">
+<h5 id="photovoltaic_changelog">"photovoltaic.changelog"</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;databaseChangeLog</span>
+    <span class="na">xmlns=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog"</span>
+    <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+    <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;include</span> <span class="na">file=</span><span class="s">"changelog/measurement_unit.changelog.xml"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;include</span> <span class="na">file=</span><span class="s">"changelog/measurement_data.changelog.xml"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;include</span> <span class="na">file=</span><span class="s">"changelog/measurement_log.changelog.xml"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/databaseChangeLog&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Der erste Gleichrichter ist bereits bekannt. In der entsprechenden Changelog-Datei
+wird eine weitere Datei inkludiert, die den Insert-Befehl für den ersten Datensatz
+enthält. Diese wird bei Erstellung der Datenbanktabellen ausgeführt. Sie befindet
+sich im Unterverzeichnis load.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">measurement_unit</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">serial_number</span><span class="p">,</span> <span class="n">unit_identifier</span><span class="p">,</span> <span class="n">unit_identifier_line</span><span class="p">,</span> <span class="n">first_line_to_read</span><span class="p">,</span><span class="n">column_date</span><span class="p">,</span><span class="n">column_value</span><span class="p">,</span> <span class="n">column_amount</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'IBC Solar Sunny Boy'</span><span class="p">,</span> <span class="s1">'SB 4000TL-20'</span><span class="p">,</span> <span class="s1">'2100132048'</span><span class="p">,</span> <span class="s1">';SB 4000TL-20;SB 4000TL-20'</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="erstellen_der_datenbank_mit_maven">Erstellen der Datenbank mit Maven</h3>
+<div class="paragraph">
+<p>Im Projektverzeichnis kann nun auf der Konsole die Datenbankerstellung angestossen
+werden. Alle obigen Schritte sind von der verwendeten Datenbank unabhängig. Erst
+an dieser Stelle wird entschieden, welches DBMS verwendet werden soll.</p>
+</div>
+<div class="sect3">
+<h4 id="sqlite">SQLite</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">mvn resources:resources liquibase:update <span class="nt">-Dliquibase</span>.url<span class="o">=</span>jdbc:sqlite:db/photovoltaic.db <span class="nt">-Dliquibase</span>.driver<span class="o">=</span>org.sqlite.JDBC</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="hsqldb_für_eine_embedded_datanbank">HSQLDB für eine embedded Datanbank</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">mvn resources:resources liquibase:update <span class="nt">-Dliquibase</span>.url<span class="o">=</span>jdbc:hsqldb:file:./db/photovoltaic <span class="nt">-Dliquibase</span>.driver<span class="o">=</span>org.hsqldb.jdbcDriver <span class="nt">-Dliquibase</span>.username<span class="o">=</span>photovoltaic <span class="nt">-Dliquibase</span>.password<span class="o">=</span><span class="s2">"sa"</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="mysql_bei_bestehender_datenbank_und_bestehendem_user">MySQL bei bestehender Datenbank und bestehendem User</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">mvn resources:resources liquibase:update <span class="nt">-Dliquibase</span>.url<span class="o">=</span>jdbc:mysql://127.0.0.1:3306/photovoltaic <span class="nt">-Dliquibase</span>.driver<span class="o">=</span>com.mysql.jdbc.Driver <span class="nt">-Dliquibase</span>.username<span class="o">=</span>root <span class="nt">-Dliquibase</span>.password<span class="o">=</span>root</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="h2_für_eine_verschlüsselte_embedded_datanbank">H2 für eine verschlüsselte embedded Datanbank</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">mvn resources:resources liquibase:update <span class="nt">-Dliquibase</span>.url<span class="o">=</span><span class="s2">"jdbc:h2:./db/photovoltaic.db;CIPHER=AES"</span> <span class="nt">-Dliquibase</span>.driver<span class="o">=</span>org.h2.Driver <span class="nt">-Dliquibase</span>.username<span class="o">=</span>Benutzername <span class="nt">-Dliquibase</span>.password<span class="o">=</span><span class="s2">"Dateipasswort Datenbankbenutzerpasswort"</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></p>
+
+	<hr />
+	
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

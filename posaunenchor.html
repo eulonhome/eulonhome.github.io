@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Webseite des Posaunenchor Urberach</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+    <link href="css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href=""><a href="index.html"><img src="img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+              </ul>
+            </li>
+            <li><a href="archive.html">Notizen</a></li>
+            <li><a href="impressum.html">Impressum</a></li>
+            <li><a href="privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>Webseite des Posaunenchor Urberach</h1>
+	</div>
+
+	<p><div class="paragraph">
+<p>Der Internetauftritt des <a href="https://www.posaunenchor-urberach.de">Urberacher Posaunenchores</a> ist mit <a href="https://jbake.org">JBake</a>, einem Generator statischer Webseiten realisiert. <br>
+Statische Webseiten sind lediglich eine Sammlung von Dateien und lassen sich mit minimalem Aufwand hosten. HTML- und CSS-Elemente werden direkt bei einer Veränderung des Codes gerendert und erst nach diesem <em>"Prerendering"</em> auf dem Webserver bereitgestellt. Dadurch wird die Performance des Webauftrittes erhöht, die Komplexität ist generell geringer und die statischen Seiten bieten keine Angriffspunkte, wie dies zum Beispiel bei einem CMS (z.B. Wordpress) der Fall ist.</p>
+</div>
+<div class="sect1">
+<h2 id="vorbereitungen">1. Vorbereitungen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Um den Internetauftritt einfach und ohne großen Aufwand verwalten zu können, muss eine Arbeitsumgebung, <a href="blog/2023/jbake_01.html">wie in diesem Artikel beschrieben ist</a> eingerichtet sein.</p>
+</li>
+<li>
+<p>Die einzelnen Dateien kann man mit jedem beliebigen Editor bearbeiten. Es eignen sich zum Beispiel</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://notepad-plus-plus.org/">Notepad ++</a> (Windows)</p>
+</li>
+<li>
+<p><a href="https://www.geany.org/">Geany</a> (Linux/Windows)</p>
+</li>
+<li>
+<p><a href="https://code.visualstudio.com/">Visual Studio Code</a> (Linux/Windows)</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="repository_auf_github">2. Repository auf GitHub</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://github.com/">GitHub</a> ist ein von Microsoft bereitgestellter Dienst zur Verwaltung von Softwareprojekten. Dazu wird ein projektbezogenes <strong><em>"Repository"</em></strong> erstellt, in dem die Sourcen und Dateien eines Softwareprojektes versioniert und aufbewahrt werden können. <br>
+Auf die Daten eines Repositories kann über die GitHub-Oberfläche oder mittels <strong><em>"git"</em></strong> vom lokalen Arbeisplatz aus zugegriffen werden. Ganz grob gesagt arbeitet der Entwickler dazu einen Kreislauf ab, der daraus besteht, die Daten auf seinen lokalen Rechner herunter zu laden (oder diese zu aktualisieren, wenn sie schon auf seinem Rechner vorhanden sind), sie zu bearbeiten und dann wieder in das Repository zurück zu übertragen. <br></p>
+</div>
+<div class="paragraph">
+<p>Es gibt eine gelunge und <a href="https://rogerdudler.github.io/git-guide/index.de.html">einfache Anleitung, um git zu lernen.</a> von Roger Dudler. Für die Pflege unserer Posaunenchor-Webseiten ist das Vorgehen aber so einfach, dass es auch ohne Vorkenntnisses gehen wird.
+Die Versionsverwaltungssoftware <a href="https://git-scm.com/">Git</a> wird nicht zum Erstellen der Webseiten benötigt. Git verwaltet die Quelldateien (Asciidoc, Markdown, HTML) für uns in Repositories lokal und auf z.B. GitHub. Sie sind dort gesichert und stehen zur Änderung, Ergänzung und nachfolgender Verwendung mit JBake bereit.</p>
+</div>
+<div class="paragraph">
+<p>Es existiert ein GitHub-Benutzerkonto für den Posaunenchor, dem aktuell aber keine eigenen Quelldateien zugeordnet sind. Dieses Konto wird dazu verwendet, auf die Quelldateien, die in meinem GitHub-Konto verwaltet werden, zugreifen zu können (<em>Der Posaunenchor ist ein "Kollaborateur" meines Repositories</em>).</p>
+</div>
+<div class="paragraph">
+<p>Die Quelldateien des Posaunenchores befinden sich in einem öffentlichen Repository auf GitHub mit folgender Adresse: <a href="https://github.com/EuleAdmin/posaunenchor-urberach" class="bare">https://github.com/EuleAdmin/posaunenchor-urberach</a> <br>
+Öffentlich bedeutet, dass sich jeder Interessierte diese Dateien herunterladen und verwenden kann. Das ist insofern kein Problem, da alle dort abgelegten Daten auch Teil des öffentlichen Internetauftrittes sind. Schreibenden Zugriff, d.h. veränderte Daten speichern oder ergänzen können nur der Besitzer und die Kollaborateure dieser Daten! <br></p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<strong>Es ist wichtig, keine privaten oder internen Daten (z.B. Dateien die Passwörter enthalten, Zugangsdaten, persönliche Daten des Posaunenchores etc.) in dieses öffentliche Repository zu übertragen!</strong> <br>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="übertragungen_auf_den_gemieteten_webspace">3. Übertragungen auf den gemieteten Webspace</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Es existiert ein FTP-Benutzer, der berechtigt ist, Dateen des Posaunenchores zu löschen oder zu erstellen. Die mit JBake auf dem persönlichen Rechner bearbeiteten Dateien werden mit FTP (<em>File Transfer Protocol)</em> auf den Webspace des Posaunenchores geladen und dort von einem Webserver angezeigt.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Für die FTP-Übertragungen kann entweder die Konsole oder ein beliebiges FTP-Programm verwendet werden. Es eignet sich z.B.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://filezilla-project.org/">FileZilla</a> (Linux/Windows), das für Windows auch in einer <a href="https://www.heise.de/download/product/filezilla-portable-48887">portable Version</a> verwenden lässt.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="pflege_des_internetauftrittes_arbeiten_mit_jbake_git_und_filezilla">4. Pflege des Internetauftrittes, Arbeiten mit JBake, Git und Filezilla</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wenn die <a href="blog/2023/jbake_01.html">Arbeitsumgebung eingerichtet ist</a>, kann der Internetauftritt sehr leicht gepflegt werden. Dazu werden die Quelldateien einmalig heruntergeladen und die folgenden Schritte immer wieder durchgeführt.</p>
+</div>
+<div class="sect2">
+<h3 id="die_posaunenchor_seiten_erstmalig_herunterladen">4.1. Die Posaunenchor-Seiten erstmalig herunterladen</h3>
+<div class="paragraph">
+<p>Nachdem die <a href="blog/2023/jbake_01.html">Arbeitsumgebung eingerichtet ist</a>, müssen die Quelldateien erstmalig von GitHub heruntergeladen werden. Das ist das <strong><em>Klonen</em></strong> eines Repositories, d.h. die Kopie des Repositories auf den lokalen Rechner. Es wird nur durchgeführt, wenn es noch kein lokales Repository zum Bearbeiten der Dateien gibt oder wenn das lokale Repository gelöscht, der Rechner neu oder Ähnliches passiert ist.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Anlegen eines Verzeichnisses.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Als erstes sollte ein Arbeitsverzeichnis an einem beliebigen Ort auf dem lokalen Rechner angelegt werden. Ich habe im Folgenden Screenshots von einem Windows-System gemacht und dieses Verzeichnis unter <em>"Dieser PC &gt; Dokumente &gt; GitHub Repository Posaunenchor"</em> angelegt.
+image::bild_09.png[Explorer Fenster,500, align="center"]</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Klonen des Repositories.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Klickt man in diesem Verzeichnis mit der rechten Maustaste, öffnet sich ein Menü, in dem der Punkt <em>"Git Bash Here"</em> ausgewählt werden kann. Daraufhin öffnet sich ein Terminalfenster. (<em>Natürlich kann auch die "Windows Eingabeaufforderung" oder "Powershell" verwendet werden. Unter Linux verwendet man einfach das bevorzugte Terminal</em>)</p>
+</li>
+<li>
+<p>In diesem Terminal gibt man den folgenden Befehl ein:</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git clone https://github.com/EuleAdmin/posaunenchor-urberach.git</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Daraufhin wird ein neues Verzeichnis (<em>posaunenchor-urberach</em>)angelegt, das alle Dateien des Repositories enthält. Das Ergebnis sieht etwa so aus:</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="pages/posaunenchor/image/bild_08.png" alt="Bash Shell" width="500">
+</div>
+</div>
+<div class="paragraph">
+<p><strong><em>Fertig!</em></strong></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="die_posaunenchor_seiten_aktualisieren">4.2. Die Posaunenchor-Seiten aktualisieren</h3>
+<div class="paragraph">
+<p>Wenn der Internetauftritt ergänzt oder verändert werden soll, das Repository aber schon auf dem lokalen Rechner vorhanden ist,
+*  öffnet man die "Bash Shell" (oder eine andere Konsole, z.B. die "Windows Eingabeaufforderung" wie oben beschrieben) <strong>im Unterverzeichnis "posaunenchor-urberach"</strong> und gibt folgenden Befehl ein:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">git pull</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Daraufhin wird das lokale Repository mit den GitHub-Daten aktualisiert. Dieser Schritt sollte immer ausgefürt werden, bevor man eigene Änderungen durchführt.</p>
+</div>
+<div class="paragraph">
+<p>(Verwendet man die Bash Shell, kann mit der Pfeil-Taste (nach oben) durch die eingegebenen Befehle geblättert werden, das erspart das wiederholte  Tippen.)</p>
+</div>
+<div class="paragraph">
+<p><strong><em>Fertig!</em></strong></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="mit_jbake_arbeiten">4.3. Mit JBake arbeiten</h3>
+<div class="sect3">
+<h4 id="das_arbeitsverzeichnis_posaunenchor_urberach">4.3.1. Das Arbeitsverzeichnis "posaunenchor-urberach"</h4>
+<div class="paragraph">
+<p>Ich habe die Verzeichnisstruktur in meinen <a href="blog/2023/jbake_00.html">Notizen zu JBake</a> grob beschrieben. Für die Pflege der Posaunenchorseiten sind nur folgende Verzeichnisse wichtig:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Im Verzeichnis <strong><em>assets/img</em></strong> befinden sich einige Bilder, die ich für die allgemeinen Seiten des Internetauftrittes (Impressum, Mitmachen, Ausbildung) verwendet habe. Dort hinein kommen Bilder, die allgemeiner Natur sind und an verschiedenen Stellen eingebunden werden können.</p>
+</li>
+<li>
+<p>Im Verzeichnis <strong><em>templates</em></strong> befinden sich die Vorlagendateien, aus denen JBake die endgültigen HTML-Webseiten zusammenstellt. Dort ist das Template "<strong><em>menu.ftl</em></strong>" interessant, wenn die Menüstruktur zum Beispiel für einen weiteren Menüpunkt verändert werden muss. <strong>Für die normalen Ergänzungen ist diese Datei aber unwichtig</strong></p>
+</li>
+<li>
+<p>Im Verzeichnis <strong><em>content</em></strong> befindet sich der eigentliche und zu pflegende Inhalt des Internetauftrittes. Dort liegen die Seiten "Mitmachen", "Ausbildung", "Geschichte" und das Impressum und verschiedene Unterverzeichnisse.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Im Unterverzeichnis <strong><em>content/image</em></strong> befinden sich alle Bilder, die in den einzelnen Artikeln und auch auf der Seite "Geschichte" verwendet werden. Ich habe das Unterverzeichnis nochmal unterteilt, um den Überblick besser behalten zu können.</p>
+</li>
+<li>
+<p>Das Unterverzeichnis <strong><em>content/archive</em></strong> enthält alle Bilder und Dateien, die <strong>aktuell nicht</strong> verwendet werden. Das ist also das Lager aller Dateien, die vielleicht einmal verwendet werden können. Alle Dateien in diesem Verzeichnis werden für uns auf GitHub gelagert, sie sind aber kein Bestandteil des Internetauftrittes. <strong>JBake ignoriert dieses Verzeichnis!</strong></p>
+</li>
+<li>
+<p>Im Unterverzeichnis <strong><em>content/blog</em></strong> befinden sich die "Artikel", d.h. die aktuellen Einträge des Internetauftrittes. <strong>In diesem Verzeichnis und den enthaltenen Unterverzeichnissen werden die meisten Arbeiten durchgeführt.</strong></p>
+</li>
+<li>
+<p>Im Unterverzeichnis <strong><em>output</em></strong> befinden sich die von JBake bereitgestellten Dateien. Der Inhalt dieses Verzeichnisses (<strong>und nur dieses Verzeichnisses!</strong>) wird letztendlich per FTP in den gemieteten Webspace übertragen.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="jbake_starten_und_den_internetauftritt_pflegen">4.3.2. JBake starten und den Internetauftritt pflegen</h4>
+<div class="paragraph">
+<p>Wenn Änderungen an den Posaunenchor-Seiten notwendig sind, müssen folgende Schritte (immer wieder) durchgeführt werden:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>öffnen der "Bash Shell" (oder eine andere Konsole, z.B. die "Windows Eingabeaufforderung" wie oben beschrieben) <strong>im Unterverzeichnis "posaunenchor-urberach"</strong> und Aktualisierung der Daten:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git pull</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Starten von JBake <strong>im Unterverzeichnis "posaunenchor-urberach"</strong></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>jbake -b -s</pre>
+</div>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="pages/posaunenchor/image/bild_10.png" alt="JBake Start" width="500">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Nach dem Start das Fenster offen lassen, JBake hat einen internen Server gestartet und stellt den gesamten Internetauftritt lokal zur Verfügung.</p>
+</li>
+<li>
+<p>Die lokalen Seiten können im Browser unter <strong><a href="http://localhost:8820" class="bare">http://localhost:8820</a></strong> geöffnet werden.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="pages/posaunenchor/image/bild_11.png" alt="JBake mit Browser" width="600">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Jetzt können alle Dateien im Arbeitsverzeichnis bearbeitet werden und das Ergebnis ist sofort im aktualisierten (F5 odder Aktualisieren klicken) Browser unter <strong><a href="http://localhost:8820" class="bare">http://localhost:8820</a></strong> sichtbar.</p>
+</li>
+<li>
+<p>Es ist nicht möglich, etwas kaputt zu machen! Wenn beim Ausprobieren alles schiefgeht, dann kann man das ganze Verzeichnis "posaunenchor-urberach" einfach löschen und nocheinmal von GitHub herunterladen (klonen).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="neute_artikel_posts_erstellen">4.3.3. Neute Artikel (Posts) erstellen</h4>
+<div class="paragraph">
+<p>JBake kann mit unterschiedlichen Dateien umgehen. Ich habe im Verzeichnis <strong><em>content/blog/2022</em></strong> Beispiele abgelegt, die als Vorlage benutzt werden können.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/">Asciidoc-Dateien</a> (Endung: ".adoc") - Asciidoc ist eine vereinfachte Auszeichnungssprache (ein erweitertes Markdown), mit dem sehr einfach und gut dokumentiert werden kann (<a href="https://de.wikipedia.org/wiki/AsciiDoc">Wikipedia-Artikel</a>).</p>
+</li>
+<li>
+<p>Markdown Dateien (Endung: ".md") - Markdown ist Asciidoc ähnlich aber bei Weitem nicht so mächtig (<a href="https://de.wikipedia.org/wiki/Markdown">Wikipedia-Artikel</a>).</p>
+</li>
+<li>
+<p>HTML (Endung: ".html") - Die Hypertext Markup Language, die auch von JBake erzeugt wird (<a href="https://de.wikipedia.org/wiki/Hypertext_Markup_Language">Wikipedia-Artikel</a>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Eine neue Datei muss mit den folgenden sechs Zeilen beginnen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">:jbake-title: &lt;Überschrift&gt;     <i class="conum" data-value="1"></i><b>(1)</b>
+:jbake-date: 2023-10-15         <i class="conum" data-value="2"></i><b>(2)</b>
+:jbake-type: post               <i class="conum" data-value="3"></i><b>(3)</b>
+:jbake-tags: post, jbake        <i class="conum" data-value="4"></i><b>(4)</b>
+:jbake-status: published        <i class="conum" data-value="5"></i><b>(5)</b>
+:jbake-source-highlighter: highlight.js
+:idprefix:
+~~~~~~                          <i class="conum" data-value="6"></i><b>(6)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Diese Überschrift erscheint auch als Überschrift der fertigen Seite (alternativ bei Asciidoc auch nur Überschrift "= Überschrift").</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Anhand dieses Datums (Format: yyyy-mm-dd) sortiert JBake den Artikel in die Liste der vorhandenen Artikel.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>"page" oder "post" ermöglicht JBake, die Datei an der richtigen Stelle einzusortieren.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Tags werden, wenn gewünscht, bei den einzelnen Artikeln angezeigt.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>"draft" oder "published" kennzeichnet, ob JBake die Datei berücksichtigt oder ignoriert.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Diese sechs Tilden sind der Trenner in einer Datei, danach beginnt der Seiteninhalt (optional).</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="html_dateien_entsprechen_dem_bereich_zwischen_den_body_tags_einer_vollständigen_html_datei_sie_beginnen_in_der_regel_mit_einem_p_tag"><em>(HTML-Dateien entsprechen dem Bereich zwischen den &lt;body&gt;-Tags einer vollständigen HTML-Datei. Sie beginnen in der Regel mit einem &lt;p&gt;-Tag.)</em></h5>
+
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="die_aktualisierten_posaunenchor_seiten_im_repository_speichern">4.4. Die aktualisierten Posaunenchor-Seiten im Repository speichern</h3>
+<div class="paragraph">
+<p>Nachdem der Internetauftritt aktualisiert ist und auf dem lokalen PC für gut befunden worden ist, müssen die Änderungen auch im GitHub-Repository eingecheckt werden. Das geschieht mit drei einfachen Befehlen.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">git add <span class="nb">.</span>                                           <i class="conum" data-value="1"></i><b>(1)</b>
+git commit <span class="nt">-m</span><span class="s1">'Eine Nachricht, was geändert wurde'</span>   <i class="conum" data-value="2"></i><b>(2)</b>
+git push                                            <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Mit diesem Befel werden alle Änderungen im Repository vorgemerkt (<em>Es gibt verschiedene Varianten des Befehls, diese berücksichtigt alle Änderungen</em>)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Mit diesem Befel werden alle Änderungen in&#8217;s Repository übernommen. Der Kommentar beschreibt, was geändert wurde.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Mit diesem Befehl wird der Stand des lokalen Repository in das GitHub-Repository übertragen.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Beim ersten Übertragen (push)</strong> in das GitHub-Repository ist eine Anmeldung notwendig, um die Berechtigung für die Übertragung zu prüfen. In diesem Fall öffnet sich folgendes Fenster</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="pages/posaunenchor/image/bild_26.png" alt="Autentifizierung 500" width="250">
+</div>
+</div>
+<div class="paragraph">
+<p>Hier muss <strong><em>Sign in with your Browser</em></strong> angeklickt und nachfolgend der GitHub Benutzername und das Passwort eingetragen werden.</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="pages/posaunenchor/image/bild_27.png" alt="UserPasswortGitHub" width="300" height="200">
+</div>
+</div>
+<div class="paragraph">
+<p>Danach wird eine Email an die Adresse des GitHub-Benutzers gesendet, die einen Verifikationscode enthält. Nachdem dieser eingetragen worden ist, wird die Übertragung durchgeführt.
+(<em>Die Emailadresse des GitHub-Benutzers wird an den Chorleiter des Posaunenchores weitergeleitet</em>)</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<strong>Es ist wichtig, alle lokalen Änderungen auch in das GitHub-Repository zu übertragen, damit jeder Beteiligte, der Änderungen am Internetauftritt des Posaunenchores durchführt auch den aktuellsten Stand der Quelldateien hat. Ist dies nicht der Fall, kann es sein, dass nicht-übertragene Änderungen überschrieben werden!</strong>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="die_posaunenchor_seiten_veröffentlichen">4.5. Die Posaunenchor-Seiten veröffentlichen</h3>
+<div class="paragraph">
+<p>Um die geänderten Seiten zu veröffentlichen, d.h. auf den gemieteten Webspace zu laden, wird ein FTP-Programm, in unserem Fall <a href="https://filezilla-project.org/">FileZilla</a> verwendet.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Nachdem der Server, der Benutzer und das Passwort in FileZilla eingetragen worden sind (dauerhaft im Servermanager), muss man sich lediglich mit dem Server verbinden und kann dann wie z.B. im Norton Commander dateien auf den Server, d.h. vom linken unteren Fenster in das rechte untere Fenster hochladen.</p>
+</li>
+<li>
+<p>Im linken Fenster muss der Inhalt des Verzeichnisses <strong><em>output</em></strong> (und nur dieser) ausgewählt werden. Auf der rechten Seite muss kein Verzeichnis ausgewählt werden, da der FTP-Benutzer nur auf das bereits gewählte Verzeichnis Zugriff hat und dies dem output-Verzeichnis der linken Seite entspricht.</p>
+</li>
+<li>
+<p><strong>Am einfachsten und beim Umfang der Posaunenchorseiten auch akzeptabel ist es, alle Dateien auf der rechten Seite zu löschen (markieren und entfernen), um danach den gesamten Inhalt des output-Verzeichnisses von der linken Seite nach rechts hochzuladen (markieren, dann rechte Maustaste, "Hochladen" auswählen)</strong> Alternativ können auch nur die Änderungen hochgeladen werden, sofern die einzelnen Dateien bekannt sind.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="pages/posaunenchor/image/bild_28.png" alt="FileZilla" width="600">
+</div>
+</div>
+<div class="paragraph">
+<p><strong><em>Fertig!</em></strong></p>
+</div>
+</div>
+</div>
+</div></p>
+
+	<hr />
+
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

@@ -2,7 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="utf-8"/>
-    <title>Eulon</title>
+    <title>Ubuntu ACPI Bios Error</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="publisher" content="Christoph Till">
     <meta name="copyright" content="Christoph Till">
@@ -17,11 +17,11 @@
     <meta name="DC.Language" content="de">
 
     <!-- Le styles -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/asciidoctor.css" rel="stylesheet">
-    <link href="css/base.css" rel="stylesheet">
-    <link href="css/prettify.css" rel="stylesheet">
-    <link href="css/eulon.css" rel="stylesheet">
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
 
      <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
     <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
@@ -40,7 +40,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href=""><a href="index.html"><img src="img/logo.png" id="eulon" class="eulon_header_image"></a>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
         </div>
         <div class="navbar-collapse collapse eulon_navbar">
           <ul class="nav navbar-nav">
@@ -48,16 +48,16 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li class="dropdown-header">Dokumentation</li>
-                <li><a href="posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li><a href="../../posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Projekte</li>
-                <li><a href="photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
-                <li><a href="mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
               </ul>
             </li>
-            <li><a href="archive.html">Notizen</a></li>
-            <li><a href="impressum.html">Impressum</a></li>
-            <li><a href="privacy.html">Datenschutzerklärung</a></li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -65,26 +65,48 @@
     <div class="container">
 
 
+	<div class="page-header">
+		<h1>Ubuntu ACPI Bios Error</h1>
+	</div>
+
+	<p><em>03 April 2023</em></p>
+
+	<p><div class="paragraph">
+<p>Wenn der Rechner "normal" bootet, dabei aber Fehlermeldungen wirft:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ACPI BIOS Error (bug): Failure creating named object ...
+:
+.... ACPI Error: AE_ALREADY_EXISTS, During name ...
+:</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>kann das mit der verwendeten Grafikkarte zusammenhängen. Es handelt sich um einen bekannten Ubuntu-Bug ohne weitere Auswirkungen. Die Meldungen können durch das Ändern des Log-Levels ausgeblendet und ignoriert werden.</p>
+</div>
+<div class="paragraph">
+<p>In der Datei <strong>/etc/default/grub</strong> die Zeile</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>um <strong>loglevel=3</strong> ergänzen. Ergebnis:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>GRUB_CMDLINE_LINUX_DEFAULT="quiet splash loglevel=3"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Danach <strong>sudo update-grub</strong> ausführen.</p>
+</div></p>
+
+	<hr />
 	
-	<img src="img/trollstigen.jpg" style="width:600px;">
-</br>
-	 Das Bild zeigt den Trollstigen, eine der bekanntesten Touristen-Strecken in Norwegen. </br>
-	 Ich habe es im Sommer 2021 aufgenommen. 
-	  </br> </br>
-	 Hier kann man Seiten finden, auf denen ich ganz unterschiedliche Dinge zusammengestellt habe,
- </br> 
-    ☛ die ich immer mal wieder ändere oder ergänze und selber zum Nachschlagen verwende. </br>
-    ☛ für andere zusammengestellt habe.</br>
-	 </hr>
-	 </br>
-    ☛ Alle meine Notizen stehen in einer <a href="archive.html">Übersicht auch hier</a>. </br>
-	 </hr>
-	 </br>
-	☛ Ich erhebe keinen Anspruch auf Vollständigkeit.</br>
-	☛ Ich übernehme keine Garantie für die Richtigkeit der Inhalte.</br>
-	☛ Ich freue mich über Anmerkungen oder Hinweise per Email.</br>
-
-
 
     </div>
 		<div id="push"></div>
@@ -99,10 +121,11 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-1.11.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/prettify.js"></script>
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
     
   </body>
 </html>
+
 

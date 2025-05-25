@@ -2,7 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="utf-8"/>
-    <title>Eulon</title>
+    <title>RaspberryPi - Docker installieren</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="publisher" content="Christoph Till">
     <meta name="copyright" content="Christoph Till">
@@ -17,11 +17,11 @@
     <meta name="DC.Language" content="de">
 
     <!-- Le styles -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/asciidoctor.css" rel="stylesheet">
-    <link href="css/base.css" rel="stylesheet">
-    <link href="css/prettify.css" rel="stylesheet">
-    <link href="css/eulon.css" rel="stylesheet">
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
 
      <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
     <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
@@ -40,7 +40,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href=""><a href="index.html"><img src="img/logo.png" id="eulon" class="eulon_header_image"></a>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
         </div>
         <div class="navbar-collapse collapse eulon_navbar">
           <ul class="nav navbar-nav">
@@ -48,16 +48,16 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li class="dropdown-header">Dokumentation</li>
-                <li><a href="posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li><a href="../../posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Projekte</li>
-                <li><a href="photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
-                <li><a href="mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
               </ul>
             </li>
-            <li><a href="archive.html">Notizen</a></li>
-            <li><a href="impressum.html">Impressum</a></li>
-            <li><a href="privacy.html">Datenschutzerklärung</a></li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -65,26 +65,47 @@
     <div class="container">
 
 
+	<div class="page-header">
+		<h1>RaspberryPi - Docker installieren</h1>
+	</div>
+
+	<p><em>16 September 2023</em></p>
+
+	<p><div class="paragraph">
+<p>Docker ist mit wenigen Befehlen installiert</p>
+</div>
+<div class="sect1">
+<h2 id="docker_setup">Docker Setup</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>apt update                             <b class="conum">(1)</b>
+<span class="nb">sudo </span>apt upgrade                            <b class="conum">(2)</b>
+<span class="nb">sudo </span>curl <span class="nt">-sSL</span> https://get.docker.com | sh  <b class="conum">(3)</b>
+<span class="nb">sudo </span>usermod <span class="nt">-aG</span> docker <span class="nv">$USER</span>               <b class="conum">(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Update des Systems</p>
+</li>
+<li>
+<p>Gegebenenfalls Upgrade einzelner Pakete</p>
+</li>
+<li>
+<p>Installation von Docker</p>
+</li>
+<li>
+<p>Hinzufügen des aktuellen Users zur Gruppe "docker"</p>
+</li>
+</ol>
+</div>
+</div>
+</div></p>
+
+	<hr />
 	
-	<img src="img/trollstigen.jpg" style="width:600px;">
-</br>
-	 Das Bild zeigt den Trollstigen, eine der bekanntesten Touristen-Strecken in Norwegen. </br>
-	 Ich habe es im Sommer 2021 aufgenommen. 
-	  </br> </br>
-	 Hier kann man Seiten finden, auf denen ich ganz unterschiedliche Dinge zusammengestellt habe,
- </br> 
-    ☛ die ich immer mal wieder ändere oder ergänze und selber zum Nachschlagen verwende. </br>
-    ☛ für andere zusammengestellt habe.</br>
-	 </hr>
-	 </br>
-    ☛ Alle meine Notizen stehen in einer <a href="archive.html">Übersicht auch hier</a>. </br>
-	 </hr>
-	 </br>
-	☛ Ich erhebe keinen Anspruch auf Vollständigkeit.</br>
-	☛ Ich übernehme keine Garantie für die Richtigkeit der Inhalte.</br>
-	☛ Ich freue mich über Anmerkungen oder Hinweise per Email.</br>
-
-
 
     </div>
 		<div id="push"></div>
@@ -99,10 +120,11 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-1.11.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/prettify.js"></script>
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
     
   </body>
 </html>
+
 

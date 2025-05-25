@@ -1,0 +1,153 @@
+body {
+    background-color: rgb(3, 26, 7);
+    color: rgb(138, 168, 143);
+}
+
+.container {
+    background-color: rgb(3, 26, 7);
+}
+
+.navbar-default {
+    background-color: rgb(3, 26, 7);
+}
+
+.eulon_header_image {
+    width: 40px;
+    height: 40px;
+    padding-bottom: 10px;
+    margin-top: 10px;
+}
+
+.eulon_navbar {
+    padding-top: 5px;
+}
+
+#footer {
+    background-color: rgb(3, 26, 7);
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: rgb(138, 168, 143);
+}
+
+.dropdown-menu {
+    background-color: rgb(3, 26, 7);
+    border-color: rgb(138, 168, 143);
+}
+
+.dropdown-menu .divider {
+    background-color: rgb(138, 168, 143);
+}
+
+table tr th,
+table tr td {
+    color: rgb(138, 168, 143);
+}
+
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav>.open>a:hover,
+.navbar-default .navbar-nav>.open>a:focus {
+    background-color: rgb(3, 26, 7);
+    color: #555;
+}
+
+.dropdown-menu>li>a:hover,
+.dropdown-menu>li>a:focus {
+    text-decoration: underline;
+    color: rgb(138, 168, 143);
+    background-color: rgb(3, 26, 7);
+}
+
+.dropdown-menu > li > a {
+    color: rgb(138, 168, 143);
+}
+
+.navbar-default .navbar-nav>li>a:hover,
+.navbar-default .navbar-nav>li>a:focus {
+    text-decoration: underline;
+    color: rgb(138, 168, 143);
+    background-color: transparent;
+}
+
+.dropdown-header {
+
+    color: #c4c4c4;
+    font-weight: bold;
+}
+
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav>.open>a:hover,
+.navbar-default .navbar-nav>.open>a:focus {
+    background-color: rgb(3, 26, 7);
+    color: rgb(138, 168, 143);
+}
+
+a {
+    color: rgb(155, 92, 41);
+}
+
+a:hover {
+    color: rgb(155, 92, 41);
+    text-decoration: underline;
+}
+
+pre {
+    color: #333;
+    background-color: rgb(196, 152, 116);
+    border: 1px solid rgb(196, 152, 116);
+
+}
+
+table {
+    background: rgb(196, 152, 116);
+    border: solid 1px rgb(196, 152, 116);
+}
+
+table p {
+    color: #333;
+
+}
+
+thead tr {
+    background-color: rgb(138, 168, 143);
+}
+
+.sect1+.sect1 {
+    border-top: 3px double rgb(218, 169, 129);
+}
+
+.navbar-default {
+    background-color: rgb(3, 26, 7);
+    border-color: rgb(218, 169, 129);
+}
+
+.page-header {
+
+    border-bottom: 1px solid rgb(218, 169, 129);
+}
+
+hr {
+
+    border-top: 1px solid rgb(218, 169, 129);
+}
+
+.conum {
+    color: rgb(138, 168, 143) !important;
+    background-color: #471f04;
+    top: -1px;
+    letter-spacing: -0px;
+}
+
+::marker {
+    color: rgb(155, 92, 41) !important;
+}
+
+table tr.even, table tr.alt, table tr:nth-of-type(even) {
+    background: rgb(224, 175, 134);
+}
+
+table.tableblock.grid-all {
+
+    border-top: 1px solid rgb(138, 168, 143);
+    border-bottom: 1px solid rgb(218, 169, 129);
+}

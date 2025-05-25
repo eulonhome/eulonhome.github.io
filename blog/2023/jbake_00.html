@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Notizen zu JBake</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+              </ul>
+            </li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>Notizen zu JBake</h1>
+	</div>
+
+	<p><em>31 Januar 2023</em></p>
+
+	<p><div class="sect2">
+<h3 id="jbake">JBake</h3>
+<div class="paragraph">
+<p><a href="https://jbake.org/">JBake</a> ist ein Generator statischer Webseiten. Dabei werden aus verschiedenen Quelldateien (Asciidoc, Markdown, HTML) statische HTML-Seiten auf dem lokalen Rechner erzeugt. Die fertigen Seiten werden dann per FTP z.B. auf gemieteten Webspace übertragen und von einem Webserver angezeigt. <br>
+Statische Webseiten sind lediglich eine Sammlung von Dateien und lassen sich mit minimalem Aufwand hosten. HTML- und CSS-Elemente werden direkt bei einer Veränderung des Codes gerendert und erst nach diesem <em>"Prerendering"</em> auf dem Webserver bereitgestellt. Dadurch wird die Performance des Webauftrittes erhöht, die Komplexität ist generell geringer und die statischen Seiten bieten keine Angriffspunkte, wie dies zum Beispiel bei einem CMS (z.B. Wordpress) der Fall ist.</p>
+</div>
+<div class="sect3">
+<h4 id="jbake_quickstart">JBake Quickstart</h4>
+<div class="paragraph">
+<p>Die Dokumentation für JBake 2.6.7 enthält einen <a href="https://jbake.org/docs/2.6.7/#quickstart_guide">Quickstart Guide</a>, in dem beschrieben ist, wie mit wenigen Befehlen ein neues JBake Projekt erzeugt werden kann. Die folgenden Konsolenbefehle reichen dafür aus:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nv">$ </span><span class="nb">mkdir </span>project        <b class="conum">(1)</b>
+<span class="nv">$ </span><span class="nb">cd </span>project
+<span class="nv">$ </span>jbake <span class="nt">-i</span>             <b class="conum">(2)</b>
+<span class="o">(</span><span class="nv">$ </span>ODER: jabake <span class="nt">-i</span> <span class="nt">-t</span> groovy mit Groovy-Templates<span class="o">)</span>
+<span class="nv">$ </span>jbake <span class="nt">-b</span> <span class="nt">-s</span>          <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Anlegen eines Projektverzeichnises und Wechsel in dieses Verzeichnis.</p>
+</li>
+<li>
+<p>Initialisieren des Projektes (Defaulttemplatesprache ist <em>freemarker</em>, wenn Groovy-Templates verwendet werden sollen mit dem Zusatz <em>-t groovy</em>)</p>
+</li>
+<li>
+<p>Fertigstellen der vorhandenen Seiten und Starten des internen Servers. Die Seiten können nun im Browser unter der Adresse <strong><a href="http://localhost:8820" class="bare">http://localhost:8820</a></strong> (oder einem anderen Port, wenn dies in der properties-Datei angegeben ist.) angezeigt werden. Der JBake Server läuft im <em>Watch-Mode</em> und aktualisiert die bearbeiteten Seiten selbständig.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="jbake_projektverzeichnis">JBake Projektverzeichnis</h4>
+<div class="paragraph">
+<p>JBake <a href="https://jbake.org/docs/2.6.7/#project_structure">Dokumentation zur Projektstruktur</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">projektverzeichnis
+|-- assets
+|  |-- css
+|  |-- fonts
+|  |-- img
+|  |-- js
+|-- content
+|  |-- blog
+|  |   |-- 2022
+|  |   |-- 2023
+|  |-- image
+|-- output
+|-- templates</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>assets</strong> - Verzeichnis mit allen für das Projekt statischen Dateien in Unterverzeichnissen, z.B. Javascript-Dateien, CSS-Dateien, Images</p>
+</li>
+<li>
+<p><strong>content</strong> - Inhalt der Webseiten, d.h. einzelne Asciidoc, Markdown oder HTML-Dateien. Das Verzeichnis "blog" enthält die Artikel (Posts) der Webseite. Es kann zur besseren Verwaltbarkeit in weitere Unterverzeichnisse aufgeteilt sein. Je nach Umfang ist es denkbar, auf Ebene von "blog" auch ein Verzeichnis "pages" anzulegen, das einzelne Seiten und Unterseiten enthält, wenn es der Übersicht dient.</p>
+</li>
+<li>
+<p><strong>output</strong> - Gerenderte Dateien, die mittels FTP auf den Wepräsenz-Server übertragen werden können.</p>
+</li>
+<li>
+<p><strong>templates</strong> - JBake Vorlagen-Dateien, aus denen JBake Seiten und Artikel erzeugt.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="jbake_properties">JBake Properties</h4>
+<div class="paragraph">
+<p>Die Erstellung der Webseiten lässt sich mit der Datei "<strong>jbake.properties</strong>" beeinflussen. Auf die einzelnen Einträge kann in den Templates mit Platzhaltern zugrgriffen werden. Sie ist in der <a href="https://jbake.org/docs/2.6.7/#configuration">JBake Dokumentation zur Konfiguration</a> beschrieben.</p>
+</div>
+<div class="paragraph">
+<p>JBake enthält eine <em>Default-Konfiguration</em> (default.properties), die in der <em>individuellen Konfiguration</em> (jbake.properties) überschrieben werden können.
+Die Konfiguration kann Kommentare enthalten. Dafür wird die entsprechende Zeile mit einem "<strong><em>#</em></strong>"" auskommentiert.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Eintrag</th>
+<th class="tableblock halign-left valign-top">Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">site.host=https://eulon.de</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Host der Webseiten</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">index.file=index.html <br>
+archive.file=archive.html <br>
+feed.file=feed.xml <br>
+sitemap.file=sitemap.xml</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default-Dateinamen</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">asset.folder=site/assets <br>
+content.folder=site/content <br>
+template.folder=site/templates</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Namen der Projekt-Unterverzeichnisse (jeweils die Default-Werte)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">render.feed=false <br>
+render.index=false <br>
+render.archive=false <br>
+render.feed=false <br>
+render.tags=false <br>
+render.sitemap=false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">welche Content unabhängigen Seiten sollen angelegt werden?</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">template.index.file=index.gsp <br>
+template.archive.file=archive.gsp <br>
+template.tag.file=tags.gsp <br>
+template.sitemap.file=sitemap.gsp <br>
+template.post.file=post.gsp <br>
+template.page.file=page.gsp <br>
+template.feed.file=feed.gsp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Groovy-Vorlagendateien (jeweils die Default-Werte. Wird kein Groovy verwendet, können diese Einträge entfallen.)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="jbake_templates">JBake Templates</h4>
+<div class="paragraph">
+<p>JBake verwendet je nach Initialisierung eines Projektes verschiedene Sprachen in den Templates, die zur Erstellung der eigentlichen Webseiten verwendet werden. Das sind <em>Freemarker, Groovy, Thymeleaf oder Jade</em>, die entsprechend in den Templates eingebettet sind.</p>
+</div>
+<div class="paragraph">
+<p>Es sind Templates für verschiedene Seiten enthalten, die nicht direkt dem zu erstellenden Content zuzuordnen sind, z.B. <em>index, archive, feed</em> oder <em>sitemap</em>. Jede dieser Dateien kann beim rendern der Seiten übersprungen werden. Dazu werden sie in der Konfigurationsdatei deaktiviert (z.B. <em>render.archive=false</em>). <br>
+Weitere Templates werden zur Erzeugung von z.B. <em>header, footer</em> und <em>menu</em> verwendet. Diese sind in den Seiten-Templates inkludiert. <br>
+Weitere Konfigurationsmöglichkeiten sind in der <a href="https://jbake.org/docs/2.6.7/#configuration">JBake Dokumentation zur Konfiguration</a> beschrieben.</p>
+</div>
+</div>
+</div></p>
+
+	<hr />
+	
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+
