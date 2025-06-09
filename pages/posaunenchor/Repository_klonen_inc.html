@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Webseite des Posaunenchor Urberach</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../pages/photovoltaic/recipe.html">Rezepte</a></li>
+              </ul>
+            </li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>Webseite des Posaunenchor Urberach</h1>
+	</div>
+
+	<p><div class="sect2">
+<h3 id="_die_posaunenchor_seiten_erstmalig_herunterladen">Die Posaunenchor-Seiten erstmalig herunterladen</h3>
+<div class="paragraph">
+<p>Nachdem die {eulonhome}/blog/2023/jbake/jbake_01.html[Arbeitsumgebung eingerichtet ist], müssen die Quelldateien erstmalig von GitHub heruntergeladen werden. Das ist das <strong><em>Klonen</em></strong> eines Repositories, d.h. die Kopie des Repositories auf den lokalen Rechner. Es wird nur durchgeführt, wenn es noch kein lokales Repository zum Bearbeiten der Dateien gibt oder wenn das lokale Repository gelöscht, der Rechner neu oder Ähnliches passiert ist.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Anlegen eines Verzeichnisses.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Als erstes sollte ein Arbeitsverzeichnis an einem beliebigen Ort auf dem lokalen Rechner angelegt werden. Ich habe im Folgenden Screenshots von einem Windows-System gemacht und dieses Verzeichnis unter <strong><em>"Dieser PC &gt; Dokumente &gt; GitHub Repository Posaunenchor"</em></strong> angelegt.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="bild_09.png" alt="Explorer Fenster" width="500">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Klonen des Repositories.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Klickt man in diesem Verzeichnis mit der rechten Maustaste, öffnet sich ein Menü, in dem der Punkt <em>"Git Bash Here"</em> ausgewählt werden kann. Daraufhin öffnet sich ein Terminalfenster. (<em>Natürlich kann auch die "Windows Eingabeaufforderung" oder "Powershell" verwendet werden. Unter Linux verwendet man einfach das bevorzugte Terminal</em>)</p>
+</li>
+<li>
+<p>In diesem Terminal gibt man den folgenden Befehl ein:</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git clone https://github.com/EuleAdmin/posaunenchor-urberach.git</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Daraufhin wird ein neues Verzeichnis (<em>posaunenchor-urberach</em>)angelegt, das alle Dateien des Repositories enthält. Das Ergebnis sieht etwa so aus:</p>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="bild_08.png" alt="Bash Shell" width="500">
+</div>
+</div>
+<div class="paragraph">
+<p><strong><em>Fertig!</em></strong></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_die_posaunenchor_seiten_aktualisieren">Die Posaunenchor-Seiten aktualisieren</h3>
+<div class="paragraph">
+<p>Wenn der Internetauftritt ergänzt oder verändert werden soll, das Repository aber schon auf dem lokalen Rechner vorhanden ist,
+*  öffnet man die "Bash Shell" (oder eine andere Konsole, z.B. die "Windows Eingabeaufforderung" wie oben beschrieben) <strong>im Unterverzeichnis "posaunenchor-urberach"</strong> und gibt folgenden Befehl ein:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell">git pull</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Daraufhin wird das lokale Repository mit den GitHub-Daten aktualisiert. Dieser Schritt sollte immer ausgefürt werden, bevor man eigene Änderungen durchführt.</p>
+</div>
+<div class="paragraph">
+<p>(Verwendet man die Bash Shell, kann mit der Pfeil-Taste (nach oben) durch die eingegebenen Befehle geblättert werden, das erspart das wiederholte  Tippen.)</p>
+</div>
+<div class="paragraph">
+<p><strong><em>Fertig!</em></strong></p>
+</div>
+</div></p>
+
+	<hr />
+
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+
