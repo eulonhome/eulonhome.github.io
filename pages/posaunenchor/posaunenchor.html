@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Webseite des Posaunenchor Urberach</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../pages/photovoltaic/recipe.html">Rezepte</a></li>
+              </ul>
+            </li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>Webseite des Posaunenchor Urberach</h1>
+	</div>
+
+	<p><div class="paragraph">
+<p>Der Internetauftritt des <a href="https://www.posaunenchor-urberach.de">Urberacher Posaunenchores</a> ist mit <a href="https://jbake.org">JBake</a>, einem Generator statischer Webseiten realisiert. <br>
+Unresolved directive in &lt;stdin&gt; - include::blog/2023/jbake_00.adoc[lines=24..25 ]</p>
+</div>
+<div class="sect1">
+<h2 id="vorbereitungen">1. Vorbereitungen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Um den Internetauftritt einfach und ohne großen Aufwand verwalten zu können, muss eine Arbeitsumgebung, <a href="blog/2023/jbake_01.html">wie in diesem Artikel beschrieben ist</a> eingerichtet sein.</p>
+</li>
+<li>
+<p>Die einzelnen Dateien kann man mit jedem beliebigen Editor bearbeiten. Es eignen sich zum Beispiel</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://notepad-plus-plus.org/">Notepad ++</a> (Windows)</p>
+</li>
+<li>
+<p><a href="https://www.geany.org/">Geany</a> (Linux/Windows)</p>
+</li>
+<li>
+<p><a href="https://code.visualstudio.com/">Visual Studio Code</a> (Linux/Windows)</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="repository_auf_github">2. Repository auf GitHub</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://github.com/">GitHub</a> ist ein von Microsoft bereitgestellter Dienst zur Verwaltung von Softwareprojekten. Dazu wird ein projektbezogenes <strong><em>"Repository"</em></strong> erstellt, in dem die Sourcen und Dateien eines Softwareprojektes versioniert und aufbewahrt werden können. <br>
+Auf die Daten eines Repositories kann über die GitHub-Oberfläche oder mittels <strong><em>"git"</em></strong> vom lokalen Arbeisplatz aus zugegriffen werden. Ganz grob gesagt arbeitet der Entwickler dazu einen Kreislauf ab, der daraus besteht, die Daten auf seinen lokalen Rechner herunter zu laden (oder diese zu aktualisieren, wenn sie schon auf seinem Rechner vorhanden sind), sie zu bearbeiten und dann wieder in das Repository zurück zu übertragen. <br></p>
+</div>
+<div class="paragraph">
+<p>Es gibt eine gelunge und <a href="https://rogerdudler.github.io/git-guide/index.de.html">einfache Anleitung, um git zu lernen.</a> von Roger Dudler. Für die Pflege unserer Posaunenchor-Webseiten ist das Vorgehen aber so einfach, dass es auch ohne Vorkenntnisses gehen wird.
+Unresolved directive in &lt;stdin&gt; - include::blog/2023/jbake_01.adoc[lines=58..59 ]</p>
+</div>
+<div class="paragraph">
+<p>Es existiert ein GitHub-Benutzerkonto für den Posaunenchor, dem aktuell aber keine eigenen Quelldateien zugeordnet sind. Dieses Konto wird dazu verwendet, auf die Quelldateien, die in meinem GitHub-Konto verwaltet werden, zugreifen zu können (<em>Der Posaunenchor ist ein "Kollaborateur" meines Repositories</em>).</p>
+</div>
+<div class="paragraph">
+<p>Die Quelldateien des Posaunenchores befinden sich in einem öffentlichen Repository auf GitHub mit folgender Adresse: <a href="https://github.com/EuleAdmin/posaunenchor-urberach" class="bare">https://github.com/EuleAdmin/posaunenchor-urberach</a> <br>
+Öffentlich bedeutet, dass sich jeder Interessierte diese Dateien herunterladen und verwenden kann. Das ist insofern kein Problem, da alle dort abgelegten Daten auch Teil des öffentlichen Internetauftrittes sind. Schreibenden Zugriff, d.h. veränderte Daten speichern oder ergänzen können nur der Besitzer und die Kollaborateure dieser Daten! <br></p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<strong>Es ist wichtig, keine privaten oder internen Daten (z.B. Dateien die Passwörter enthalten, Zugangsdaten, persönliche Daten des Posaunenchores etc.) in dieses öffentliche Repository zu übertragen!</strong> <br>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="übertragungen_auf_den_gemieteten_webspace">3. Übertragungen auf den gemieteten Webspace</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Es existiert ein FTP-Benutzer, der berechtigt ist, Dateen des Posaunenchores zu löschen oder zu erstellen. Die mit JBake auf dem persönlichen Rechner bearbeiteten Dateien werden mit FTP (<em>File Transfer Protocol)</em> auf den Webspace des Posaunenchores geladen und dort von einem Webserver angezeigt.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Für die FTP-Übertragungen kann entweder die Konsole oder ein beliebiges FTP-Programm verwendet werden. Es eignet sich z.B.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://filezilla-project.org/">FileZilla</a> (Linux/Windows), das für Windows auch in einer <a href="https://www.heise.de/download/product/filezilla-portable-48887">portable Version</a> verwenden lässt.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="pflege_des_internetauftrittes_arbeiten_mit_jbake_git_und_filezilla">4. Pflege des Internetauftrittes, Arbeiten mit JBake, Git und Filezilla</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wenn die <a href="blog/2023/jbake_01.html">Arbeitsumgebung eingerichtet ist</a>, kann der Internetauftritt sehr leicht gepflegt werden. Dazu werden die Quelldateien einmalig heruntergeladen und die folgenden Schritte immer wieder durchgeführt.</p>
+</div>
+<div class="paragraph">
+<p>Unresolved directive in &lt;stdin&gt; - include::pages/posaunenchor/Repository_klonen_inc.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Unresolved directive in &lt;stdin&gt; - include::pages/posaunenchor/Mit_JBake_arbeiten_inc.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Unresolved directive in &lt;stdin&gt; - include::pages/posaunenchor/Repository_pushen_inc.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Unresolved directive in &lt;stdin&gt; - include::pages/posaunenchor/Mit_FTP_aktualisieren_inc.adoc[]</p>
+</div>
+</div>
+</div></p>
+
+	<hr />
+
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

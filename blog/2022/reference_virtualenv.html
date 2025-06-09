@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Virtuelle Umgebungen in Python</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../pages/photovoltaic/recipe.html">Rezepte</a></li>
+              </ul>
+            </li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>Virtuelle Umgebungen in Python</h1>
+	</div>
+
+	<p><em>29 September 2022</em></p>
+
+	<p><div id="preamble">
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Bei der Entwicklung mit Python immer mit virtuellen Umgebungen
+(Virtual Environments, kurz „venv“) arbeiten.<br></p>
+</li>
+<li>
+<p>Eine virtuelle Umgebung enthält den Python-Interpreter und alle für das Projekt importierten Module in einem Unterverzeichnis, unabhängig davon, welche Version des Interpreters und welche Module auf dem Entwicklungs-System vorhanden sind.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Seit Python 3.3 gehört das venv-Modul zum Lieferumfang; eine neue virtuelle Umgebung mit dem Namen <strong>venv</strong> entsteht mit nur
+einem Befehl: <br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">python3 -m venv venv     <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>python3 -m venv &lt;Name des Verzeichnisses&gt; In diesem Beispiel liegt das Verzeichnis <em>venv</em> unterhalb des Verzeichnisses, in dem der Befehl ausgeführt wurde.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Aktivierung des venv der ­folgende Befehl:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">source venv/bin/activate    <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Unter Windows: venv\Scripts\activate.bat</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Jetzt können beliebige Python-Modul installiert/deinstalliert werden.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">pip3 install &lt;modulname&gt;
+pip3 uninstall &lt;modulname&gt;</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Nach der Installation ist das Modul im virtuellen Environment zu finden (unterhalb von <em>venv\Lib\site-packages</em>).</p>
+</li>
+<li>
+<p>Um das virtuelle Environment wieder zu deaktivieren reicht <strong>"deactivate"</strong></p>
+</li>
+<li>
+<p>Um es zu löschen muss nur der Ordner (z.B. <em>venv</em>) gelöscht werden.</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel1">
+<li><a href="#_requirements">1. Requirements</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_requirements">1. Requirements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die für ein Projekt installierten Module werden in einer Datei <strong>requirements.txt</strong> zusammengestellt.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">pip3 freeze &gt; requirements.txt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Diese Datei wird mit dem Projekt ausgeliefert. Auf dem Zielsystem muss dann,um alle notwendigen Module zu installieren, lediglich folgendes ausgeführt werden:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">pip3 install -r requirements.txt
+(oder)
+pip3 install -r requirements.txt --user  <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Außerhalb eines virtuellen Environments werden Module nur im User-Verzeichnis und nicht global installiert, wenn <em>--user</em> angegeben worden ist.</td>
+</tr>
+</table>
+</div>
+</div>
+</div></p>
+
+	<hr />
+	
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

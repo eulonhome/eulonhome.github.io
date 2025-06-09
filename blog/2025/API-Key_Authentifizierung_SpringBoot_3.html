@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>API-Key Authentifizierung (Spring Boot 3)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../pages/photovoltaic/recipe.html">Rezepte</a></li>
+              </ul>
+            </li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>API-Key Authentifizierung (Spring Boot 3)</h1>
+	</div>
+
+	<p><em>07 Juni 2025</em></p>
+
+	<p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>(Spring Boot 3)</p>
+</div>
+<div class="paragraph">
+<p>Die Security-Konfiguration hat sich in <strong>Spring Security 6</strong> deutlich verändert. Beispielsweise wurde die  <em>WebSecurityConfigurerAdapter-Klasse</em> entfernt und durch eine <em>SecurityFilterChain-Bean</em> ersetzt. <br></p>
+</div>
+<div class="paragraph">
+<p><em>(<a href="API-Key_Authentifizierung_SpringBoot_3.pdf">Diese Notiz als Pdf</a>)</em></p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel2">
+<li><a href="#_beispielprojekt">1. Beispielprojekt</a></li>
+<li><a href="#_konfiguration">2. Konfiguration</a></li>
+<li><a href="#_controller">3. Controller</a></li>
+<li><a href="#_filterung">4. Filterung</a></li>
+<li><a href="#_authentifizierungs_handler">5. Authentifizierungs-Handler</a></li>
+<li><a href="#_authentifizierungs_objekt">6. Authentifizierungs-Objekt</a></li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_beispielprojekt">1. Beispielprojekt</h3>
+<div class="paragraph">
+<p>Das Projekt realisiert einen Spring Boot Webservice. Der Service bietet frei zugängliche und administrative Resourcen an. Die administrativen Resourcen benötigen einen Api-Key zur Authentifikation des Benutzers.</p>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="bild_001.png" alt="bild 001" width="500">
+</div>
+<div class="title">Abbildung 1. <a href="https://start.spring.io">spring initializr</a></div>
+</div>
+<div style="page-break-after: always;"></div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Dieses Projekt wird intern verwendet. Das Passwort ist in Form eines Hash in der Konfiguration abgelegt. Grundsätzlich und vor allem bei öffentlich bereitgestellten Resourcen sollten Passwörter in einem Key-Vault, z.B. einem Hashicorp Vault, einem <a href="https://openbao.org">OpenBao-Vault</a> oder etwas ähnlichem vorgehalten werden.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_konfiguration">2. Konfiguration</h3>
+<div class="listingblock">
+<div class="title">Configuration-SecurityFilterChain (Ausschnitt)</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">:
+:
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfiguration
+{
+
+   private final ApiKeyAuthenticationFilter authenticationFilter;   <i class="conum" data-value="1"></i><b>(1)</b>
+
+   @Bean
+   public SecurityFilterChain securityFilterChain( HttpSecurity http ) throws Exception
+   {
+      return http
+            .sessionManagement( session -&gt; session.sessionCreationPolicy( SessionCreationPolicy.STATELESS ) )     <i class="conum" data-value="2"></i><b>(2)</b>
+            .formLogin(AbstractHttpConfigurer::disable)  <i class="conum" data-value="3"></i><b>(3)</b>
+            .csrf( AbstractHttpConfigurer :: disable )  <i class="conum" data-value="4"></i><b>(4)</b>
+            .securityMatcher( "/**" )       <i class="conum" data-value="5"></i><b>(5)</b>
+            .authorizeHttpRequests( registry -&gt; registry
+                  .requestMatchers( AntPathRequestMatcher.antMatcher( "/internal/**" ) ).authenticated()        <i class="conum" data-value="6"></i><b>(6)</b>
+                  .anyRequest().permitAll()     <i class="conum" data-value="7"></i><b>(7)</b>
+            )
+            .addFilterBefore( authenticationFilter, UsernamePasswordAuthenticationFilter.class )        <i class="conum" data-value="8"></i><b>(8)</b>
+            .build();
+   }
+
+}
+:
+:</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>ApiKeyAuthenticationFilter ist ein Requestfilter, der den eingehenden Request anhand der Security-Regeln filtert und bei Bedarf die Authentifizierungslogik anwendet. Dazu wird die Methode "<em>doFilterInternal</em>" überschrieben, die als Parameter u.a. die FilterChain-Bean und den Request enthält.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Stateless Sessions stellen sicher, dass jeder Request neu authetifiziert wird, da keine Cookies verwendet werden.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Damit wird die Out-of-the-box Authentifizierung über ein Formular, d.h. die Weiterleitung auf eine Default-Loginseite verhindert.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Spring Security schützt standardmäßig vor CSRF-Angriffen für unsichere HTTP-Methoden, wie z. B. eine POST-Anfrage, sodass kein zusätzlicher Code erforderlich ist. Um POST-Anfragen durchführen zu können, muss CSRF disabled sein.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>hier kann festgelegt werden, für welche Endpunkte die Sicherheitskonfiguration gültig ist (in diesem Fall für alle Endpunkte).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Dieser Matcher legt fest, dass alle Resourcen, die "internal" in der Url enthalten authentifiziert werden müssen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Dieser Matcher legt fest, dass alle weiteren Resourcen keiner Authentifizierung unterliegen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Es wird sichergestellt, dass die individuelle Filterung immer vor der sonst an erster Stelle (default) stehenden User:Password Filterung durchgeführt wird.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_controller">3. Controller</h3>
+<div class="paragraph">
+<p>Der Controller enthält Resourcen, die keiner Zugangsbeschränkung unterliegen und administrative Resourcen, die mit einem Api-Key abgesichert werden.</p>
+</div>
+<div class="listingblock">
+<div class="title">Controller-Resourcen</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">   :
+   :
+   @GetMapping("/doSomething")
+   public ResponseEntity&lt;String&gt; getDoSomething() {
+      return ResponseEntity.ok("This is a public resource.");
+   }
+
+   @GetMapping("/internal/doAdmin")
+   public ResponseEntity&lt;String&gt; getDoAdmin() {
+      return ResponseEntity.ok("This is a a protected resource.");
+   }
+   :
+   :</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_filterung">4. Filterung</h3>
+<div class="paragraph">
+<p>ApiKeyAuthenticationFilter erbt von einem Requestfilter, der den eingehenden Request anhand der Security-Regeln filtert und bei Bedarf die Authentifizierungslogik anwendet. Dazu wird die Methode "<em>doFilterInternal</em>" überschrieben.</p>
+</div>
+<div class="listingblock">
+<div class="title">Filterung-ApiKeyAuthenticationFilter</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">:
+:
+@Component
+@RequiredArgsConstructor
+public class ApiKeyAuthenticationFilter extends OncePerRequestFilter
+{
+   private final ApiKeyAuthExtractor extractor;       <i class="conum" data-value="1"></i><b>(1)</b>
+
+   @Override
+   protected void doFilterInternal( HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain ) throws ServletException, IOException
+   {
+      extractor.extract( request )
+               .ifPresent( SecurityContextHolder.getContext() :: setAuthentication );        <i class="conum" data-value="2"></i><b>(2)</b>
+
+      filterChain.doFilter( request, response );
+   }
+}
+:
+:</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Der Extractor ist die Klasse, die die Authentifizierung durchführt, d.h. in diesem Fall den übergebenen Api-Key überprüft.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Abhängig vom Ergebnis der Extractor-Klasse wird ein Request als authentifiziert bzw. nicht authentifiziert angesehen.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_authentifizierungs_handler">5. Authentifizierungs-Handler</h3>
+<div class="paragraph">
+<p>ApiKeyAuthExtractor ist ein Handler, der in der Methode "<em>extract</em>" in diesem Fall den im Request übergebenen Key mit einem vorhandenen Wert, z.B. aus einem Key-Vault oder Properties-File vergleicht und damit eine erfolgreiche/nicht erfolgreiche Authentifizierung anzeigt.</p>
+</div>
+<div class="listingblock">
+<div class="title">Authentifizierung-ApiKeyAuthExtractor</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">:
+:
+   @Value("${security.key}")
+   private String apiKey;
+
+   public Optional&lt;Authentication&gt; handle( HttpServletRequest request) {
+      String providedKey = request.getHeader("api-key");
+      if (providedKey == null || !providedKey.equals(apiKey))
+         return Optional.empty();
+
+      return Optional.of(new ApiKeyAuthentication( providedKey, AuthorityUtils.NO_AUTHORITIES));
+   }
+:
+:</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_authentifizierungs_objekt">6. Authentifizierungs-Objekt</h3>
+<div class="paragraph">
+<p>ApiKeyAuthentication ist ein Authentifizierungs-Object, d.h. ein Token der bei einer erfolgreichen Authetifizierung erzeugt wird, d.h. wenn im Requestheader ein korrekter API-Schlüssel gefunden wird.</p>
+</div>
+<div class="listingblock">
+<div class="title">Authentifizierung-ApiKeyAuthentication</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">:
+:
+public class ApiKeyAuthentication extends AbstractAuthenticationToken
+{
+   private final String apiKey;
+
+   public ApiKeyAuthentication(String apiKey, Collection&lt;? extends GrantedAuthority&gt; authorities) {
+      super(authorities);
+      this.apiKey = apiKey;
+      setAuthenticated(true);
+   }
+
+   @Override
+   public Object getCredentials() {
+      return null;
+   }
+
+   @Override
+   public Object getPrincipal() {
+      return apiKey;
+   }
+}
+:
+:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><em>(<a href="API-Key_Authentifizierung_SpringBoot_3.pdf">Diese Notiz als Pdf</a>)</em></p>
+</div>
+</div></p>
+
+	<hr />
+	
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

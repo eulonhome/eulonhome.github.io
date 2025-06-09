@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>JBake Arbeitsumgebung einrichten</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../../css/base.css" rel="stylesheet">
+    <link href="../../../css/prettify.css" rel="stylesheet">
+    <link href="../../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../../"><a href="index.html"><img src="../../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../../pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../../pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../../pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../../pages/photovoltaic/recipe.html">Rezepte</a></li>
+              </ul>
+            </li>
+            <li><a href="../../../archive.html">Notizen</a></li>
+            <li><a href="../../../impressum.html">Impressum</a></li>
+            <li><a href="../../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>JBake Arbeitsumgebung einrichten</h1>
+	</div>
+
+	<p><em>01 Februar 2023</em></p>
+
+	<p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>_https://jbake.org/[JBake] ist ein Generator statischer Webseiten. (<a href="jbake_00.html ">Meine Notizen zu JBake</a>)</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel2">
+<li><a href="#_java_runtime_environment">1. Java Runtime Environment</a></li>
+<li><a href="#_jbake_installieren">2. JBake installieren</a></li>
+<li><a href="#_git_installieren">3. Git installieren</a></li>
+<li><a href="#_filezilla_installieren">4. Filezilla installieren</a></li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_java_runtime_environment">1. Java Runtime Environment</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Windows</th>
+<th class="tableblock halign-left valign-top">Linux</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><span class="image"><img src="bild_01.png" alt="JRE-Test" width="450"></span></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Wenn "<em>java -version</em>" kein Ergebnis anzeigt, muss ein Java Runtime Environment installiert werden.</p>
+</li>
+<li>
+<p>Es kann für Windows  bei <a href="https://www.java.com/de/download/manual.jsp">www.java.com</a> unter <a href="https://javadl.oracle.com/webapps/download/AutoDL?BundleId=247947_0ae14417abb444ebb02b9815e2103550">diesem Link</a> heruntergeladen und danach installiert werden.</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unter Linux ist in der Regel ein JRE vorhanden. Es kann, wenn notwendig mit "<em>sudo apt-get install default-jre</em>" (bei Debian basierten Distributionen) installiert werden.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_jbake_installieren">2. JBake installieren</h3>
+<div class="paragraph">
+<p>JBake wird einfach von <a href="https://github.com/jbake-org/jbake/releases/download/v2.6.7/jbake-2.6.7-bin.zip">hier</a> heruntergeladen und in einem beliebigen Verzeichnis ausgepackt.  Es ist komfortabel, den Pfad der JBake-Startdatei (<em>Verzeichnis: bin</em>) in den Umgebungsvariablen bekannt zu geben, um das Eintippen des Pfades in der Konsole zu vermeiden.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Windows</th>
+<th class="tableblock halign-left valign-top">Linux</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><span class="image"><img src="bild_02.png" alt="Environment" width="500"></span></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Start</strong> anklicken &#8594; <strong>Umgebungsvariable</strong> eintippen, dann unter
+<strong>Systemeigenschaften &#8594; Umgebungsvariablen &#8594; Path &#8594; Neu</strong> den Pfad angeben, der zum Entpacken ausgewählt worden ist (Das <em>bin</em>-Verzeichnis, z.B. <em>c:\Program Files\jbake-2.6.7-bin\bin</em>)</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unter Linux kann je nach Distribution und verwendeter Shell der Pfad des <em>bin</em>-Verzeichnisses mit einer Ergänzung in z.B. der Datei <strong>.bashrc</strong> exportiert werden.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Danach kann in der Eingabeaufforderung oder einem Terminal überprüft werden, ob JBake ohne Angabe des Installationspfades gefunden wird. <br>
+<span class="image"><img src="bild_03.png" alt="JBake-Test" width="450"></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_git_installieren">3. Git installieren</h3>
+<div class="paragraph">
+<p>Die Versionsverwaltungssoftware <a href="https://git-scm.com/">Git</a> wird nicht zum Erstellen der Webseiten benötigt. Git verwaltet die Quelldateien (Asciidoc, Markdown, HTML) für uns in Repositories lokal und auf z.B. GitHub. Sie sind dort gesichert und stehen zur Änderung, Ergänzung und nachfolgender Verwendung mit JBake bereit.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Windows</th>
+<th class="tableblock halign-left valign-top">Linux</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Das Konsolenprogramm Git kann von <a href="https://github.com/git-for-windows/git/releases/download/v2.39.1.windows.1/Git-2.39.1-64-bit.exe">dieser Adresse</a> heruntergeladen und mit einem Doppelklick installiert werden.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unter Linux kann git, wenn notwendig mit "<em>sudo apt-get install git</em>" (bei Debian basierten Distributionen) installiert werden.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Abschließend sollten noch folgende Konfigurationsbefehle ausgeführt werden, da Git sonst danach fragt und keine Befehle ausführt. In einer Konsole oder z.B. der "Windows Eingabeaufforderung" müssen die folgenden Befehle ausgeführt werden (das terminal (cmd oder Konsole kann in jedem beliebigen Verzeichnis des Rechners geöffnet werden.):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git config --global user.email "ftp@posaunenchor-urberach.de"
+git config --global user.name "Posaunenchor"</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Die Emailadresse und der Benutzername sin nicht vorgegeben, dort sollte etwas sinnvolles und gültiges eingetragen werden.</p>
+</li>
+<li>
+<p>Lässt man <em>"--global"</em> weg, gelten die Einträge nur für den gerade angemeldeten Benutzer. Das ist Geschmackssache.</p>
+</li>
+<li>
+<p><em>Wir arbeiten nur im Hauptbranch (master oder main), deshalb werden Branches hier nicht weiter berücksichtigt!</em></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_filezilla_installieren">4. Filezilla installieren</h3>
+<div class="paragraph">
+<p>Filezilla ist ein FTP-Programm, das zum Übertragen der fertig "gebackenen" Webseiten auf den Webserver verwendet wird.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Windows</th>
+<th class="tableblock halign-left valign-top">Linux</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Filezilla kann z.B. <a href="https://www.heise.de/download/product/filezilla-portable-48887/download/danke?id=68f70354-cbc5-4e98-bb56-66754b9274da">von dieser Adresse</a> in einer portablen Variante heruntergeladen und mit Doppelklick installiert werden.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unter Linux kann filezilla, wenn notwendig mit "<em>sudo apt-get install filezilla</em>" (bei Debian basierten Distributionen) installiert werden.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><span class="image"><img src="bild_04.png" alt="FileZilla Serverangaben" width="500"></span></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Um einen Server einzurichten müssen nur die gelb hinterlegten Felder mit den bekannten Angaben ausgefüllt werden.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>FileZilla erklärt sich eigentlich selber. Server werden im <strong><em>Servermanager</em></strong> angelegt und dann <strong><em>oben links</em></strong> ausgewählt.
+Ist die Verbindung aufgebaut können <strong><em>unten links</em></strong> auf dem lokalen Rechner z.B. Dateien oder Verzeichnisses ausgewählt werden und dann mit einem rechten Mausklick und dem nachfolgenden Dialog auf den Server, der <strong><em>unten rechts</em></strong> angezeigt wird hochgeladen werden - <em>fertig</em>.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="bild_05.png" alt="FileZilla Fenster" width="800"></span></p>
+</div>
+</div></p>
+
+	<hr />
+	
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../../js/bootstrap.min.js"></script>
+    <script src="../../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

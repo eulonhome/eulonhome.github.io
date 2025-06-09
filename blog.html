@@ -48,11 +48,12 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li class="dropdown-header">Dokumentation</li>
-                <li><a href="posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li><a href="pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Projekte</li>
-                <li><a href="photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
-                <li><a href="mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="pages/photovoltaic/recipe.html">Rezepte</a></li>
               </ul>
             </li>
             <li><a href="archive.html">Notizen</a></li>
@@ -67,6 +68,261 @@
 
 	<p>Alle Notizen stehen in einer <a href="archive.html">Übersicht auch hier</a>.</p>
 
+  			<a href="blog/2025/API-Key_Authentifizierung_SpringBoot_3.html"><h1>API-Key Authentifizierung (Spring Boot 3)</h1></a>
+  			<p>07 Juni 2025</p>
+  			<p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>(Spring Boot 3)</p>
+</div>
+<div class="paragraph">
+<p>Die Security-Konfiguration hat sich in <strong>Spring Security 6</strong> deutlich verändert. Beispielsweise wurde die  <em>WebSecurityConfigurerAdapter-Klasse</em> entfernt und durch eine <em>SecurityFilterChain-Bean</em> ersetzt. <br></p>
+</div>
+<div class="paragraph">
+<p><em>(<a href="API-Key_Authentifizierung_SpringBoot_3.pdf">Diese Notiz als Pdf</a>)</em></p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel2">
+<li><a href="#_beispielprojekt">1. Beispielprojekt</a></li>
+<li><a href="#_konfiguration">2. Konfiguration</a></li>
+<li><a href="#_controller">3. Controller</a></li>
+<li><a href="#_filterung">4. Filterung</a></li>
+<li><a href="#_authentifizierungs_handler">5. Authentifizierungs-Handler</a></li>
+<li><a href="#_authentifizierungs_objekt">6. Authentifizierungs-Objekt</a></li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_beispielprojekt">1. Beispielprojekt</h3>
+<div class="paragraph">
+<p>Das Projekt realisiert einen Spring Boot Webservice. Der Service bietet frei zugängliche und administrative Resourcen an. Die administrativen Resourcen benötigen einen Api-Key zur Authentifikation des Benutzers.</p>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="bild_001.png" alt="bild 001" width="500">
+</div>
+<div class="title">Abbildung 1. <a href="https://start.spring.io">spring initializr</a></div>
+</div>
+<div style="page-break-after: always;"></div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Dieses Projekt wird intern verwendet. Das Passwort ist in Form eines Hash in der Konfiguration abgelegt. Grundsätzlich und vor allem bei öffentlich bereitgestellten Resourcen sollten Passwörter in einem Key-Vault, z.B. einem Hashicorp Vault, einem <a href="https://openbao.org">OpenBao-Vault</a> oder etwas ähnlichem vorgehalten werden.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_konfiguration">2. Konfiguration</h3>
+<div class="listingblock">
+<div class="title">Configuration-SecurityFilterChain (Ausschnitt)</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">:
+:
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfiguration
+{
+
+   private final ApiKeyAuthenticationFilter authenticationFilter;   <i class="conum" data-value="1"></i><b>(1)</b>
+
+   @Bean
+   public SecurityFilterChain securityFilterChain( HttpSecurity http ) throws Exception
+   {
+      return http
+            .sessionManagement( session -&gt; session.sessionCreationPolicy( SessionCreationPolicy.STATELESS ) )     <i class="conum" data-value="2"></i><b>(2)</b>
+            .formLogin(AbstractHttpConfigurer::disable)  <i class="conum" data-value="3"></i><b>(3)</b>
+            .csrf( AbstractHttpConfigurer :: disable )  <i class="conum" data-value="4"></i><b>(4)</b>
+            .securityMatcher( "/**" )       <i class="conum" data-value="5"></i><b>(5)</b>
+            .authorizeHttpRequests( registry -&gt; registry
+                  .requestMatchers( AntPathRequestMatcher.antMatcher( "/internal/**" ) ).authenticated()        <i class="conum" data-value="6"></i><b>(6)</b>
+                  .anyRequest().permitAll()     <i class="conum" data-value="7"></i><b>(7)</b>
+            )
+            .addFilterBefore( authenticationFilter, UsernamePasswordAuthenticationFilter.class )        <i class="conum" data-value="8"></i><b>(8)</b>
+            .build();
+   }
+
+}
+:
+:</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>ApiKeyAuthenticationFilter ist ein Requestfilter, der den eingehenden Request anhand der Security-Regeln filtert und bei Bedarf die Authentifizierungslogik anwendet. Dazu wird die Methode "<em>doFilterInternal</em>" überschrieben, die als Parameter u.a. die FilterChain-Bean und den Request enthält.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Stateless Sessions stellen sicher, dass jeder Request neu authetifiziert wird, da keine Cookies verwendet werden.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Damit wird die Out-of-the-box Authentifizierung über ein Formular, d.h. die Weiterleitung auf eine Default-Loginseite verhindert.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Spring Security schützt standardmäßig vor CSRF-Angriffen für unsichere HTTP-Methoden, wie z. B. eine POST-Anfrage, sodass kein zusätzlicher Code erforderlich ist. Um POST-Anfragen durchführen zu können, muss CSRF disabled sein.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>hier kann festgelegt werden, für welche Endpunkte die Sicherheitskonfiguration gültig ist (in diesem Fall für alle Endpunkte).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Dieser Matcher legt fest, dass alle Resourcen, die "internal" in der Url enthalten authentifiziert werden müssen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Dieser Matcher legt fest, dass alle weiteren Resourcen keiner Authentifizierung unterliegen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Es wird sichergestellt, dass die individuelle Filterung immer vor der sonst an erster Stelle (default) stehenden User:Password Filterung durchgeführt wird.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_controller">3. Controller</h3>
+<div class="paragraph">
+<p>Der Controller enthält Resourcen, die keiner Zugangsbeschränkung unterliegen und administrative Resourcen, die mit einem Api-Key abgesichert werden.</p>
+</div>
+<div class="listingblock">
+<div class="title">Controller-Resourcen</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">   :
+   :
+   @GetMapping("/doSomething")
+   public ResponseEntity&lt;String&gt; getDoSomething() {
+      return ResponseEntity.ok("This is a public resource.");
+   }
+
+   @GetMapping("/internal/doAdmin")
+   public ResponseEntity&lt;String&gt; getDoAdmin() {
+      return ResponseEntity.ok("This is a a protected resource.");
+   }
+   :
+   :</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_filterung">4. Filterung</h3>
+<div class="paragraph">
+<p>ApiKeyAuthenticationFilter erbt von einem Requestfilter, der den eingehenden Request anhand der Security-Regeln filtert und bei Bedarf die Authentifizierungslogik anwendet. Dazu wird die Methode "<em>doFilterInternal</em>" überschrieben.</p>
+</div>
+<div class="listingblock">
+<div class="title">Filterung-ApiKeyAuthenticationFilter</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">:
+:
+@Component
+@RequiredArgsConstructor
+public class ApiKeyAuthenticationFilter extends OncePerRequestFilter
+{
+   private final ApiKeyAuthExtractor extractor;       <i class="conum" data-value="1"></i><b>(1)</b>
+
+   @Override
+   protected void doFilterInternal( HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain ) throws ServletException, IOException
+   {
+      extractor.extract( request )
+               .ifPresent( SecurityContextHolder.getContext() :: setAuthentication );        <i class="conum" data-value="2"></i><b>(2)</b>
+
+      filterChain.doFilter( request, response );
+   }
+}
+:
+:</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Der Extractor ist die Klasse, die die Authentifizierung durchführt, d.h. in diesem Fall den übergebenen Api-Key überprüft.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Abhängig vom Ergebnis der Extractor-Klasse wird ein Request als authentifiziert bzw. nicht authentifiziert angesehen.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_authentifizierungs_handler">5. Authentifizierungs-Handler</h3>
+<div class="paragraph">
+<p>ApiKeyAuthExtractor ist ein Handler, der in der Methode "<em>extract</em>" in diesem Fall den im Request übergebenen Key mit einem vorhandenen Wert, z.B. aus einem Key-Vault oder Properties-File vergleicht und damit eine erfolgreiche/nicht erfolgreiche Authentifizierung anzeigt.</p>
+</div>
+<div class="listingblock">
+<div class="title">Authentifizierung-ApiKeyAuthExtractor</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">:
+:
+   @Value("${security.key}")
+   private String apiKey;
+
+   public Optional&lt;Authentication&gt; handle( HttpServletRequest request) {
+      String providedKey = request.getHeader("api-key");
+      if (providedKey == null || !providedKey.equals(apiKey))
+         return Optional.empty();
+
+      return Optional.of(new ApiKeyAuthentication( providedKey, AuthorityUtils.NO_AUTHORITIES));
+   }
+:
+:</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_authentifizierungs_objekt">6. Authentifizierungs-Objekt</h3>
+<div class="paragraph">
+<p>ApiKeyAuthentication ist ein Authentifizierungs-Object, d.h. ein Token der bei einer erfolgreichen Authetifizierung erzeugt wird, d.h. wenn im Requestheader ein korrekter API-Schlüssel gefunden wird.</p>
+</div>
+<div class="listingblock">
+<div class="title">Authentifizierung-ApiKeyAuthentication</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">:
+:
+public class ApiKeyAuthentication extends AbstractAuthenticationToken
+{
+   private final String apiKey;
+
+   public ApiKeyAuthentication(String apiKey, Collection&lt;? extends GrantedAuthority&gt; authorities) {
+      super(authorities);
+      this.apiKey = apiKey;
+      setAuthenticated(true);
+   }
+
+   @Override
+   public Object getCredentials() {
+      return null;
+   }
+
+   @Override
+   public Object getPrincipal() {
+      return apiKey;
+   }
+}
+:
+:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><em>(<a href="API-Key_Authentifizierung_SpringBoot_3.pdf">Diese Notiz als Pdf</a>)</em></p>
+</div>
+</div></p>
   			<a href="blog/2024/kubernetes1.html"><h1>Kubernetes Entwicklungsumgebung mit Minikube</h1></a>
   			<p>10 Februar 2024</p>
   			<p><div class="sect1">
@@ -96,98 +352,109 @@
 <div class="listingblock">
 <div class="title"><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/">kubectl - Debian - Repository</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>apt-get update
-<span class="c"># apt-transport-https may be a dummy package; if so, you can skip that package</span>
-<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> apt-transport-https ca-certificates curl
+<pre class="prettyprint highlight"><code data-lang="shell">sudo apt-get update
+# apt-transport-https may be a dummy package; if so, you can skip that package
+sudo apt-get install -y apt-transport-https ca-certificates curl
 
-<span class="c"># Download the public signing key for the Kubernetes package repositories. The same signing key is used for all repositories so you can disregard the version in the URL:</span>
+# Download the public signing key for the Kubernetes package repositories. The same signing key is used for all repositories so you can disregard the version in the URL:
 
-<span class="c"># If the folder `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.</span>
-<span class="c"># sudo mkdir -p -m 755 /etc/apt/keyrings</span>
+# If the folder `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
+# sudo mkdir -p -m 755 /etc/apt/keyrings
 
-curl <span class="nt">-fsSL</span> https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | <span class="nb">sudo </span>gpg <span class="nt">--dearmor</span> <span class="nt">-o</span> /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-<span class="c"># Update apt package index, then install kubectl:</span>
+# Update apt package index, then install kubectl:
 
-<span class="nb">sudo </span>apt-get update
-<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> kubectl</code></pre>
+sudo apt-get update
+sudo apt-get install -y kubectl</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title"><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-bash-completion">kubectl - bash - autocompletion</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">apt-get <span class="nb">install </span>bash-completion
-<span class="nb">source</span> /usr/share/bash-completion/bash_completion</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">apt-get install bash-completion
+source /usr/share/bash-completion/bash_completion</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title"><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-bash-completion">kubectl - bash - enable autocompletion - user</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">echo</span> <span class="s1">'source &lt;(kubectl completion bash)'</span> <span class="o">&gt;&gt;</span>~/.bashrc
+<pre class="prettyprint highlight"><code data-lang="shell">echo 'source &lt;(kubectl completion bash)' &gt;&gt;~/.bashrc
 
-<span class="c"># Wenn es keinen alias gibt:</span>
-<span class="nb">echo</span> <span class="s1">'alias k=kubectl'</span> <span class="o">&gt;&gt;</span>~/.bashrc
+# Wenn es keinen alias gibt:
+echo 'alias k=kubectl' &gt;&gt;~/.bashrc
 
-<span class="c"># Wenn der alias angelegt ist</span>
-<span class="nb">echo</span> <span class="s1">'complete -o default -F __start_kubectl k'</span> <span class="o">&gt;&gt;</span>~/.bashrc
+# Wenn der alias angelegt ist
+echo 'complete -o default -F __start_kubectl k' &gt;&gt;~/.bashrc
 
-<span class="nb">source</span> ~/.bashrc</code></pre>
+source ~/.bashrc</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title"><a href="https://minikube.sigs.k8s.io/docs/start/">Minikube - Installation - Debian</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">curl <span class="nt">-LO</span> https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
-<span class="nb">sudo </span>dpkg <span class="nt">-i</span> minikube_latest_amd64.deb</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+sudo dpkg -i minikube_latest_amd64.deb</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title"><a href="https://minikube.sigs.k8s.io/docs/start/">Minikube - start - stop cluster</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">minikube start
+<pre class="prettyprint highlight"><code data-lang="shell">minikube start
 
 minikube stop</code></pre>
 </div>
 </div>
 </div>
 </div></p>
-  			<a href="blog/2023/TablesToGo.html"><h1>Datenbanktabellen als Go-Struct abbilden</h1></a>
+  			<a href="blog/2023/go/TablesToGo.html"><h1>Datenbanktabellen als Go-Struct abbilden</h1></a>
   			<p>15 Oktober 2023</p>
-  			<p><div class="paragraph">
-<p>Standardvorgehen, um Datenbank-Daten mit Go zu lesen oder zu schreiben ist die Benutzung des <a href="https://pkg.go.dev/database/sql">database/sql</a> Package. Selects werden in der Regel, d.h. wenn es sich nicht um einen einzelnen Spaltenwert handelt mit einem "<em>struct</em>" oder einer Liste von "<em>structs</em>" verarbeitet. <br>
-Ein "<em>struct</em>" bildet dabei jeweils eine Datenbanktabelle ab. Es ist mühsam und fehleranfällig, "<em>structs</em>" für jede Tabelle manuell zu pflegen.</p>
+  			<p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Standardvorgehen, um Datenbank-Daten mit Go zu lesen oder zu schreiben ist die Benutzung des <strong><a href="https://pkg.go.dev/database/sql">"database/sql"</a></strong> Package. Selects werden in der Regel, d.h. wenn es sich nicht um einen einzelnen Spaltenwert handelt mit einem <strong>"<em>struct</em>"</strong> oder einer Liste von <strong>"<em>structs</em>"</strong> verarbeitet. <br>
+Ein <strong>"<em>struct</em>"</strong> bildet dabei jeweils eine Datenbanktabelle ab. Es ist mühsam und fehleranfällig, <strong>"<em>structs</em>"</strong> für jede Tabelle manuell zu pflegen.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel2">
+<li><a href="#_tables_to_go">1. Tables-To-Go</a></li>
+<li><a href="#_setup">2. Setup</a></li>
+<li><a href="#_verwendung_mit_postgres">3. Verwendung mit Postgres</a></li>
+<li><a href="#_verwendung_mit_sqlite3">4. Verwendung mit SQLite3</a></li>
+<li><a href="#_beispiel">5. Beispiel</a></li>
+</ul>
+</div>
 </div>
 <div class="sect2">
-<h3 id="tables_to_go">Tables-To-Go</h3>
+<h3 id="_tables_to_go">1. Tables-To-Go</h3>
 <div class="paragraph">
-<p><a href="https://github.com/fraenky8/tables-to-go">Tables-To-Go</a> kann <em>structs</em> reverse aus einem vorhandenen Datenbankmodell erstellen. Dies funktioniert mit <a href="https://www.mysql.com">MySQL</a>, <a href="https://www.postgresql.org/">Posstgres</a> und (über einen im Repository beschriebenen Umweg, d.h. Klonen des Repositories und Ausführen von "<em> make sqlite3</em>" auch) mit <a href="https://www.sqlite.org/index.html">SQLite</a>.</p>
+<p><strong><a href="https://github.com/fraenky8/tables-to-go">Tables-To-Go</a></strong> kann <em>structs</em> reverse aus einem vorhandenen Datenbankmodell erstellen. Dies funktioniert z.B. mit <strong><a href="https://www.mysql.com">MySQL</a></strong>, <strong><a href="https://www.postgresql.org/">Postgres</a></strong> und (über einen im Repository beschriebenen Umweg, d.h. Klonen des Repositories und Ausführen von "<em> make sqlite3</em>" auch) mit <strong><a href="https://www.sqlite.org/index.html">SQLite</a></strong>.</p>
 </div>
-<div class="sect3">
-<h4 id="setup">Setup</h4>
+</div>
+<div class="sect2">
+<h3 id="_setup">2. Setup</h3>
 <div class="paragraph">
 <p><a href="https://github.com/fraenky8/tables-to-go">Tables-To-Go</a> lässt sich mit diesem Befehl installieren:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">go <span class="nb">install </span>github.com/fraenky8/tables-to-go@latest</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">go install github.com/fraenky8/tables-to-go@latest</code></pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
+<div class="paragraph">
 <p>Nach der Installation mit "<em>go install</em>" oder "<em>make sqlite3</em>" steht eine ausführbare Datei "tables-to-go" im Verzeichnis "~/go/bin" bereit"</p>
-</li>
-</ul>
 </div>
 </div>
-<div class="sect3">
-<h4 id="verwendung_mit_postgres">Verwendung mit Postgres</h4>
+<div class="sect2">
+<h3 id="_verwendung_mit_postgres">3. Verwendung mit Postgres</h3>
 <div class="paragraph">
 <p>Die <em>structs</em> für alle Tabellen einer Datenbank lassen sich für Postgres (dem Standardfall) mit folgendem Befehl erstellen</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">tables-to-go <span class="nt">-h</span> &lt;ip der Datenbank&gt; <span class="nt">-d</span> &lt;DB-Name&gt; <span class="nt">-u</span> &lt;Benutzer&gt; <span class="nt">-p</span> &lt;Passwort&gt; <span class="nt">-pn</span> &lt;Go-Paketname&gt;</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">tables-to-go -h &lt;ip der Datenbank&gt; -d &lt;DB-Name&gt; -u &lt;Benutzer&gt; -p &lt;Passwort&gt; -pn &lt;Go-Paketname&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -195,29 +462,29 @@ Ein "<em>struct</em>" bildet dabei jeweils eine Datenbanktabelle ab. Es ist müh
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">tables-to-go <span class="nt">-v</span> <span class="nt">-t</span> pg <span class="nt">-h</span> &lt;ip der Datenbank&gt; <span class="nt">-port</span> &lt;DB-Port&gt; <span class="nt">-d</span> &lt;DB-Name&gt; <span class="nt">-u</span> &lt;Benutzer&gt; <span class="nt">-p</span> &lt;Passwort&gt; <span class="nt">-pn</span> &lt;Go-Paketname&gt; <span class="nt">-pre</span> &lt;Prefix&gt; <span class="nt">-suf</span> &lt;Postfix&gt; <span class="nt">-of</span> &lt;Ausgabeverzeichnis&gt;</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">tables-to-go -v -t pg -h &lt;ip der Datenbank&gt; -port &lt;DB-Port&gt; -d &lt;DB-Name&gt; -u &lt;Benutzer&gt; -p &lt;Passwort&gt; -pn &lt;Go-Paketname&gt; -pre &lt;Prefix&gt; -suf &lt;Postfix&gt; -of &lt;Ausgabeverzeichnis&gt;</code></pre>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="verwendung_mit_sqlite3">Verwendung mit SQLite3</h4>
+<div class="sect2">
+<h3 id="_verwendung_mit_sqlite3">4. Verwendung mit SQLite3</h3>
 <div class="paragraph">
 <p>Die <em>structs</em> für alle Tabellen einer Datenbank lassen sich für SQLite3 mit folgendem Befehl erstellen</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">tables-to-go <span class="nt">-v</span> <span class="nt">-t</span> sqlite3 <span class="nt">-d</span> &lt;..Pfad/zur/Datenbank/dbname.sqlite&gt; <span class="nt">-of</span> &lt;Ausgabeverzeichnis&gt; <span class="nt">-suf</span> &lt;Postfix&gt;</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">tables-to-go -v -t sqlite3 -d &lt;..Pfad/zur/Datenbank/dbname.sqlite&gt; -of &lt;Ausgabeverzeichnis&gt; -suf &lt;Postfix&gt;</code></pre>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="beispiel">Beispiel</h4>
+<div class="sect2">
+<h3 id="_beispiel">5. Beispiel</h3>
 <div class="paragraph">
 <p>Die Tabelle "<em>app_user</em>" in einer Postgres-Datenbank sieht folgendermaßen aus:</p>
 </div>
 <div class="imageblock text-left">
 <div class="content">
-<img src="/image/2023/go/tablesToGo_01.png" alt="DB-Tabelle" width="250">
+<img src="tablesToGo_01.png" alt="DB-Tabelle" width="250">
 </div>
 </div>
 <div class="paragraph">
@@ -225,7 +492,7 @@ Ein "<em>struct</em>" bildet dabei jeweils eine Datenbanktabelle ab. Es ist müh
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">tables-to-go <span class="nt">-v</span> <span class="nt">-t</span> pg <span class="nt">-h</span> localhost <span class="nt">-port</span> 15432 <span class="nt">-d</span> mp3 <span class="nt">-u</span> psqladmin <span class="nt">-p</span> postgres <span class="nt">-pn</span> model <span class="nt">-suf</span> _entity <span class="nt">-of</span> model</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">tables-to-go -v -t pg -h localhost -port 15432 -d mp3 -u psqladmin -p postgres -pn model -suf _entity -of model</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -233,43 +500,53 @@ Ein "<em>struct</em>" bildet dabei jeweils eine Datenbanktabelle ab. Es ist müh
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="go"><span class="k">package</span> <span class="n">model</span>
+<pre class="prettyprint highlight"><code data-lang="go">package model
 
-<span class="k">import</span> <span class="p">(</span>
-	<span class="s">"database/sql"</span>
-	<span class="s">"time"</span>
-<span class="p">)</span>
+import (
+	"database/sql"
+	"time"
+)
 
-<span class="k">type</span> <span class="n">AppUserEntity</span> <span class="k">struct</span> <span class="p">{</span>
-	<span class="n">ID</span>        <span class="kt">int</span>            <span class="s">`db:"id"`</span>
-	<span class="n">UserCode</span>  <span class="kt">string</span>         <span class="s">`db:"user_code"`</span>
-	<span class="n">LastName</span>  <span class="kt">string</span>         <span class="s">`db:"last_name"`</span>
-	<span class="n">FirstName</span> <span class="n">sql</span><span class="o">.</span><span class="n">NullString</span> <span class="s">`db:"first_name"`</span>
-	<span class="n">Email</span>     <span class="kt">string</span>         <span class="s">`db:"email"`</span>
-	<span class="n">Password</span>  <span class="kt">string</span>         <span class="s">`db:"password"`</span>
-	<span class="n">Role</span>      <span class="n">sql</span><span class="o">.</span><span class="n">NullString</span> <span class="s">`db:"role"`</span>
-	<span class="n">Enabled</span>   <span class="n">sql</span><span class="o">.</span><span class="n">NullBool</span>   <span class="s">`db:"enabled"`</span>
-	<span class="n">Created</span>   <span class="n">time</span><span class="o">.</span><span class="n">Time</span>      <span class="s">`db:"created"`</span>
-<span class="p">}</span></code></pre>
-</div>
+type AppUserEntity struct {
+	ID        int            `db:"id"`
+	UserCode  string         `db:"user_code"`
+	LastName  string         `db:"last_name"`
+	FirstName sql.NullString `db:"first_name"`
+	Email     string         `db:"email"`
+	Password  string         `db:"password"`
+	Role      sql.NullString `db:"role"`
+	Enabled   sql.NullBool   `db:"enabled"`
+	Created   time.Time      `db:"created"`
+}</code></pre>
 </div>
 </div>
 </div></p>
-  			<a href="blog/2023/RaspiBootUSB.html"><h1>RaspberryPi von USB booten</h1></a>
+  			<a href="blog/2023/raspi/RaspiBootUSB.html"><h1>RaspberryPi von USB booten</h1></a>
   			<p>17 September 2023</p>
-  			<p><div class="paragraph">
+  			<p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
 <p>Schwachstelle des RaspberryPi ist die SDCard, auf der das Betriebssystem untergebracht ist. Diese Karten sind für das Speichern von Informationen gedacht. Die ständigen Lese- und Schreibvorgänge des Betriebssystems strapazieren die Karte derartig, dass es keine Frage ist, ob Karte ausfällt, sondern nur wann das passiert. <br>
 Der RaspberryPi ab Version 3 lässt sich ohne Einschränkungen betreiben, wenn das Betriebssystem auf eine externe Festplatte ausgelagert wird. Das sollte im Idealfall eine SSD sein, da diese stromsparender als eine mechanische HDD arbeitet und auch die Gefahr eines thermischen Schadens gering ist, da in der Regel keine zusätzliche Kühlung notwendig ist.</p>
 </div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel2">
+<li><a href="#_raspberrypi_vorbereiten">1. RaspberryPi vorbereiten</a></li>
+<li><a href="#_externe_usb_platte_vorbereiten">2. Externe USB-Platte vorbereiten</a></li>
+</ul>
+</div>
+</div>
 <div class="sect2">
-<h3 id="raspberrypi_vorbereiten">RaspberryPi vorbereiten</h3>
+<h3 id="_raspberrypi_vorbereiten">1. RaspberryPi vorbereiten</h3>
 <div class="paragraph">
 <p>Der RaspberryPi ist, wenn er fabrikneu in Betrieb genommen wird so eingestellt, dass er von USB bootet, sofern keine SD-Karte eingesetzt worden ist. Sollte das nicht funktionieren oder ist der Raspberry bereits in Gebrauch gewesen, würde ich eine zusätzliche SD-Karte verwenden und diese mit einem aktuellen <a href="https://www.raspberrypi.com/software/">Raspberry Pi OS</a> versehen. Das kann man direkt herunterladen oder aber mit dem "Imager" auf die Karte übertragen. <br>
 Die Karte verwendet man dann zum Start des Raspberry und zum Aufruf der Konfiguration.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>raspi-config</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">sudo raspi-config</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -277,7 +554,7 @@ Die Karte verwendet man dann zum Start des Raspberry und zum Aufruf der Konfigur
 </div>
 </div>
 <div class="sect2">
-<h3 id="externe_usb_platte_vorbereiten">Externe USB-Platte vorbereiten</h3>
+<h3 id="_externe_usb_platte_vorbereiten">2. Externe USB-Platte vorbereiten</h3>
 <div class="paragraph">
 <p>Die externe Disk muss analog zur SD-Karte mit einem Betriebssystem für den Raspberry Pi versehen werden. Verwendet man ein Raspberry Pi OS kann man dazu ebenfalls den Imager verwenden.</p>
 </div>
@@ -288,9 +565,9 @@ Die Karte verwendet man dann zum Start des Raspberry und zum Aufruf der Konfigur
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="/image/2023/raspi/imager_1.png" alt="Optionen Imager" width="300"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="imager_1.png" alt="Optionen Imager" width="300"></span></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">In den Zusatzoptionen können gleich die Zugangsdaten für den SSH-Zugfriff und das WLAN, sowie die Länder- und Tastatureinstellungen festgelegt werden. <br></p>
-<p class="tableblock"><span class="image"><img src="/image/2023/raspi/imager_2.png" alt="Optionen Imager" width="300"></span></p></td>
+<p class="tableblock"><span class="image"><img src="imager_2.png" alt="Optionen Imager" width="300"></span></p></td>
 </tr>
 </tbody>
 </table>
@@ -298,53 +575,71 @@ Die Karte verwendet man dann zum Start des Raspberry und zum Aufruf der Konfigur
 <p>Angeschlossen wird die externe Platte an den schnbellen <strong>blauen</strong> USB-3-Ports des Raspberry Pi (in der Version 4).</p>
 </div>
 </div></p>
-  			<a href="blog/2023/RaspiDebian12.html"><h1>RaspberryPi OS auf Bookworm updaten</h1></a>
+  			<a href="blog/2023/raspi/RaspiDebian12.html"><h1>RaspberryPi OS auf Bookworm updaten</h1></a>
   			<p>16 September 2023</p>
-  			<p><div class="paragraph">
+  			<p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
 <p>Aktuell basiert die "stable" Version des <a href="https://www.raspberrypi.com/software" class="bare">https://www.raspberrypi.com/software</a> [Raspberry Pi OS] noch auf Debian Bullseye (Debian 11) und es ist nicht sicher, wann ein Upgrade erfolgen wird. Mit folgenden Schritten kann man auf die neue Version "Bookworm" upgraden.</p>
 </div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel1">
+<li><a href="#_upgrade_via_terminal">1. Upgrade via Terminal</a>
+<ul class="sectlevel2">
+<li><a href="#_altes_system_aktualisieren">1.1. Altes System aktualisieren</a></li>
+<li><a href="#_sourcen_anpassen">1.2. Sourcen anpassen</a></li>
+<li><a href="#_geänderte_quellen_aktualisieren">1.3. Geänderte Quellen aktualisieren</a></li>
+<li><a href="#_die_distribution_aktualisieren">1.4. Die Distribution aktualisieren</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
 <div class="sect1">
-<h2 id="upgrade_via_terminal">Upgrade via Terminal</h2>
+<h2 id="_upgrade_via_terminal">1. Upgrade via Terminal</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><em><strong>Als erstes ein Backup anlegen, Daten sichern usw. !!</strong></em></p>
 </div>
 <div class="sect2">
-<h3 id="altes_system_aktualisieren">Altes System aktualisieren</h3>
+<h3 id="_altes_system_aktualisieren">1.1. Altes System aktualisieren</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>apt update
-<span class="nb">sudo </span>apt upgrade</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">sudo apt update
+sudo apt upgrade</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="sourcen_anpassen">Sourcen anpassen</h3>
+<h3 id="_sourcen_anpassen">1.2. Sourcen anpassen</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>nano /etc/apt/sources.list     <b class="conum">(1)</b></code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">sudo nano /etc/apt/sources.list     <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
-<ol>
-<li>
-<p>In der Datei /etc/apt/sources.list alle Vorkommen von "bullseye" zu "bookworm" ändern und die einzelnen Zeilen um "<em>&#8230;&#8203;-firmware</em>" Einträge ergänzen.</p>
-</li>
-</ol>
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In der Datei /etc/apt/sources.list alle Vorkommen von "bullseye" zu "bookworm" ändern und die einzelnen Zeilen um "<em>&#8230;&#8203;-firmware</em>" Einträge ergänzen.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Das Ergenis sieht dann etwa so aus:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+<pre class="prettyprint highlight"><code data-lang="shell">deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
 deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
 deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="geänderte_quellen_aktualisieren">Geänderte Quellen aktualisieren</h3>
+<h3 id="_geänderte_quellen_aktualisieren">1.3. Geänderte Quellen aktualisieren</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -357,16 +652,16 @@ deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>apt update
-<span class="nb">sudo </span>apt upgrade</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">sudo apt update
+sudo apt upgrade</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="die_distribution_aktualisieren">Die Distribution aktualisieren</h3>
+<h3 id="_die_distribution_aktualisieren">1.4. Die Distribution aktualisieren</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>apt dist-upgrade</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">sudo apt dist-upgrade</code></pre>
 </div>
 </div>
 <div class="ulist">
@@ -387,39 +682,38 @@ deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free
 </div>
 </div>
 </div></p>
-  			<a href="blog/2023/RaspiDockerSetup.html"><h1>RaspberryPi - Docker installieren</h1></a>
+  			<a href="blog/2023/raspi/RaspiDockerSetup.html"><h1>RaspberryPi - Docker installieren</h1></a>
   			<p>16 September 2023</p>
   			<p><div class="paragraph">
 <p>Docker ist mit wenigen Befehlen installiert</p>
 </div>
-<div class="sect1">
-<h2 id="docker_setup">Docker Setup</h2>
-<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>apt update                             <b class="conum">(1)</b>
-<span class="nb">sudo </span>apt upgrade                            <b class="conum">(2)</b>
-<span class="nb">sudo </span>curl <span class="nt">-sSL</span> https://get.docker.com | sh  <b class="conum">(3)</b>
-<span class="nb">sudo </span>usermod <span class="nt">-aG</span> docker <span class="nv">$USER</span>               <b class="conum">(4)</b></code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">sudo apt update                             <i class="conum" data-value="1"></i><b>(1)</b>
+sudo apt upgrade                            <i class="conum" data-value="2"></i><b>(2)</b>
+sudo curl -sSL https://get.docker.com | sh  <i class="conum" data-value="3"></i><b>(3)</b>
+sudo usermod -aG docker $USER               <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
-<ol>
-<li>
-<p>Update des Systems</p>
-</li>
-<li>
-<p>Gegebenenfalls Upgrade einzelner Pakete</p>
-</li>
-<li>
-<p>Installation von Docker</p>
-</li>
-<li>
-<p>Hinzufügen des aktuellen Users zur Gruppe "docker"</p>
-</li>
-</ol>
-</div>
-</div>
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Update des Systems</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Gegebenenfalls Upgrade einzelner Pakete</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Installation von Docker</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Hinzufügen des aktuellen Users zur Gruppe "docker"</td>
+</tr>
+</table>
 </div></p>
   			<a href="blog/2023/BootACPIBiosErrorLinuxMint21.html"><h1>Ubuntu ACPI Bios Error</h1></a>
   			<p>03 April 2023</p>
@@ -458,167 +752,125 @@ deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free
 </div></p>
   			<a href="blog/2023/Asciidoc_IncludeMitTags.html"><h1>Asciidoc - Include mit "Tags"</h1></a>
   			<p>02 April 2023</p>
-  			<p><div class="sect2">
-<h3 id="quellcode_mit_tags_versehen">Quellcode mit "Tags" versehen</h3>
-<div class="ulist">
-<ul>
-<li>
+  			<p><div class="paragraph">
 <p>Quellcodeabschnitte werden mit Kommentarzeichen und <strong>"tag:name[]</strong>", bzw. <strong>"end:name[]</strong>" unterteilt.</p>
-</li>
-</ul>
 </div>
 <div class="listingblock">
 <div class="title">HelloWorld.java</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="o">{</span>
-    <span class="c1">// tag::mainMethod[]</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World!"</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="c1">// end::mainMethod[]</span>
-<span class="o">}</span></code></pre>
+<pre class="prettyprint highlight"><code data-lang="java">public class HelloWorld {
+    // tag::mainMethod[]
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+    // end::mainMethod[]
+}</code></pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
+<div class="paragraph">
 <p>Der tag-Abschnitt kann dann im Asciidoc-Test eingefügt werden</p>
-</li>
-</ul>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre> [source,java]
+<pre class="prettyprint highlight"><code data-lang="txt"> [source,java]
  ----
  include::HelloWorld.java[tags=mainMethod]
- ----</pre>
+ ----</code></pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>das ergibt dann</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>das ergibt dann in der Dokumentation</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>    public static void main(String[] args) {
+<pre class="prettyprint highlight"><code data-lang="asciidoc">Text vor dem Tag
+    public static void main(String[] args) {
         System.out.println("Hello World!");
-    }</pre>
-</div>
+    }
+Text nach dem Tag</code></pre>
 </div>
 </div></p>
   			<a href="blog/2023/VirtualBoxOnLinuxMint21.html"><h1>VirtualBox unter Linux Mint 21</h1></a>
   			<p>01 April 2023</p>
-  			<p><div class="sect2">
-<h3 id="verwenden_einer_aktuellen_virtualbox_version">Verwenden einer aktuellen VirtualBox-Version</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>Unter Linux Mint 21 lässt sich aus den Repositories VirtualBox nur in Version 6.x installieren.</p>
-</li>
-<li>
-<p>Die aktuelle Version (7.x) wird direkt von <a href="https://www.virtualbox.org">VirtualBox</a> installiert.</p>
-</li>
-</ul>
-</div>
-<div class="sect3">
-<h4 id="installation_des_gpg_key">Installation des GPG-Key</h4>
-<div class="listingblock">
-<div class="content">
-<pre>wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg</pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="virtualbox_repository_verwenden">VirtualBox-Repository verwenden</h4>
-<div class="listingblock">
-<div class="content">
-<pre>echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] http://download.virtualbox.org/virtualbox/debian jammy contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
-
-sudo apt update
-
-sudo apt install virtualbox-7.0</pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="extension_pack_installieren">Extension Pack installieren</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Exakte VirtualBox-Version feststellen</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>vboxmanage -v | cut -dr -f1</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Extension Pack herunterladen</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>Oracle_VM_VirtualBox_Extension_Pack-7.0.6.vbox-extpack
-wget https://download.virtualbox.org/virtualbox/7.0.6/Oracle_VM_VirtualBox_Extension_Pack-7.0.6.vbox-extpack</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Extension Pack installieren</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.6.vbox-extpack</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Installation des Extension Packs prüfen</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>vboxmanage list extpacks</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Benutzer zur Gruppe "vboxusers" hinzufügen</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo usermod -a -G vboxusers $USER</pre>
-</div>
-</div>
-</div>
-</div></p>
-  			<a href="blog/2023/jbake_01.html"><h1>JBake Arbeitsumgebung einrichten</h1></a>
-  			<p>01 Februar 2023</p>
-  			<p><div class="sect2">
-<h3 id="jbake">JBake</h3>
+  			<p><div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
-<p><em><a href="https://jbake.org/">JBake</a> ist ein Generator statischer Webseiten.
-Dabei werden aus verschiedenen Quelldateien (Asciidoc, Markdown, HTML) statische HTML-Seiten auf dem lokalen Rechner erzeugt. Die fertigen Seiten werden dann per FTP z.B. auf gemieteten Webspace übertragen und von einem Webserver angezeigt. Siehe auch meine <a href="jbake_00.html">Notizen zu JBake</a></em></p>
+<p>Unter Linux Mint 21 lässt sich aus den Repositories VirtualBox nur in Version 6.x installieren. So wird die aktuelle Version (7.x) direkt von <a href="https://www.virtualbox.org">VirtualBox</a> installiert.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel2">
+<li><a href="#_installation_des_gpg_key">1. Installation des GPG-Key</a></li>
+<li><a href="#_virtualbox_repository_verwenden">2. VirtualBox-Repository verwenden</a></li>
+<li><a href="#_extension_pack_installieren">3. Extension Pack installieren</a></li>
+<li><a href="#_benutzer_zur_gruppe_vboxusers_hinzufügen">4. Benutzer zur Gruppe "vboxusers" hinzufügen</a></li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="java_runtime_environment">Java Runtime Environment</h3>
+<h3 id="_installation_des_gpg_key">1. Installation des GPG-Key</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell">wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_virtualbox_repository_verwenden">2. VirtualBox-Repository verwenden</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell">echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] http://download.virtualbox.org/virtualbox/debian jammy contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+# update der Paketquellen und Installation
+sudo apt update
+sudo apt install virtualbox-7.0</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_extension_pack_installieren">3. Extension Pack installieren</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell"># Exakte VirtualBox-Version feststellen
+vboxmanage -v | cut -dr -f1
+# Extension Pack herunterladen
+Oracle_VM_VirtualBox_Extension_Pack-7.0.6.vbox-extpack
+wget https://download.virtualbox.org/virtualbox/7.0.6/Oracle_VM_VirtualBox_Extension_Pack-7.0.6.vbox-extpack
+# Extension Pack installieren
+sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.6.vbox-extpack
+# Installation des Extension Packs prüfen
+vboxmanage list extpacks</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_benutzer_zur_gruppe_vboxusers_hinzufügen">4. Benutzer zur Gruppe "vboxusers" hinzufügen</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell">sudo usermod -a -G vboxusers $USER</code></pre>
+</div>
+</div>
+</div></p>
+  			<a href="blog/2023/jbake/jbake_01.html"><h1>JBake Arbeitsumgebung einrichten</h1></a>
+  			<p>01 Februar 2023</p>
+  			<p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>_https://jbake.org/[JBake] ist ein Generator statischer Webseiten. (<a href="jbake_00.html ">Meine Notizen zu JBake</a>)</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel2">
+<li><a href="#_java_runtime_environment">1. Java Runtime Environment</a></li>
+<li><a href="#_jbake_installieren">2. JBake installieren</a></li>
+<li><a href="#_git_installieren">3. Git installieren</a></li>
+<li><a href="#_filezilla_installieren">4. Filezilla installieren</a></li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_java_runtime_environment">1. Java Runtime Environment</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -633,7 +885,7 @@ Dabei werden aus verschiedenen Quelldateien (Asciidoc, Markdown, HTML) statische
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><span class="image"><img src="/image/2023/jbake/bild_01.png" alt="JRE-Test" width="450"></span></p>
+<p><span class="image"><img src="bild_01.png" alt="JRE-Test" width="450"></span></p>
 </div>
 <div class="ulist">
 <ul>
@@ -653,7 +905,7 @@ Dabei werden aus verschiedenen Quelldateien (Asciidoc, Markdown, HTML) statische
 </table>
 </div>
 <div class="sect2">
-<h3 id="jbake_2">JBake</h3>
+<h3 id="_jbake_installieren">2. JBake installieren</h3>
 <div class="paragraph">
 <p>JBake wird einfach von <a href="https://github.com/jbake-org/jbake/releases/download/v2.6.7/jbake-2.6.7-bin.zip">hier</a> heruntergeladen und in einem beliebigen Verzeichnis ausgepackt.  Es ist komfortabel, den Pfad der JBake-Startdatei (<em>Verzeichnis: bin</em>) in den Umgebungsvariablen bekannt zu geben, um das Eintippen des Pfades in der Konsole zu vermeiden.</p>
 </div>
@@ -671,7 +923,7 @@ Dabei werden aus verschiedenen Quelldateien (Asciidoc, Markdown, HTML) statische
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><span class="image"><img src="/image/2023/jbake/bild_02.png" alt="Environment" width="500"></span></p>
+<p><span class="image"><img src="bild_02.png" alt="Environment" width="500"></span></p>
 </div>
 <div class="ulist">
 <ul>
@@ -689,11 +941,11 @@ Dabei werden aus verschiedenen Quelldateien (Asciidoc, Markdown, HTML) statische
 </table>
 <div class="paragraph">
 <p>Danach kann in der Eingabeaufforderung oder einem Terminal überprüft werden, ob JBake ohne Angabe des Installationspfades gefunden wird. <br>
-<span class="image"><img src="/image/2023/jbake/bild_03.png" alt="JBake-Test" width="450"></span></p>
+<span class="image"><img src="bild_03.png" alt="JBake-Test" width="450"></span></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="git">Git</h3>
+<h3 id="_git_installieren">3. Git installieren</h3>
 <div class="paragraph">
 <p>Die Versionsverwaltungssoftware <a href="https://git-scm.com/">Git</a> wird nicht zum Erstellen der Webseiten benötigt. Git verwaltet die Quelldateien (Asciidoc, Markdown, HTML) für uns in Repositories lokal und auf z.B. GitHub. Sie sind dort gesichert und stehen zur Änderung, Ergänzung und nachfolgender Verwendung mit JBake bereit.</p>
 </div>
@@ -743,7 +995,7 @@ git config --global user.name "Posaunenchor"</pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="filezilla">Filezilla</h3>
+<h3 id="_filezilla_installieren">4. Filezilla installieren</h3>
 <div class="paragraph">
 <p>Filezilla ist ein FTP-Programm, das zum Übertragen der fertig "gebackenen" Webseiten auf den Webserver verwendet wird.</p>
 </div>
@@ -777,7 +1029,7 @@ git config --global user.name "Posaunenchor"</pre>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><span class="image"><img src="/image/2023/jbake/bild_04.png" alt="FileZilla Serverangaben" width="500"></span></p>
+<p><span class="image"><img src="bild_04.png" alt="FileZilla Serverangaben" width="500"></span></p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>Um einen Server einzurichten müssen nur die gelb hinterlegten Felder mit den bekannten Angaben ausgefüllt werden.</p>
@@ -790,53 +1042,67 @@ git config --global user.name "Posaunenchor"</pre>
 Ist die Verbindung aufgebaut können <strong><em>unten links</em></strong> auf dem lokalen Rechner z.B. Dateien oder Verzeichnisses ausgewählt werden und dann mit einem rechten Mausklick und dem nachfolgenden Dialog auf den Server, der <strong><em>unten rechts</em></strong> angezeigt wird hochgeladen werden - <em>fertig</em>.</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="/image/2023/jbake/bild_05.png" alt="FileZilla Fenster" width="800"></span></p>
+<p><span class="image"><img src="bild_05.png" alt="FileZilla Fenster" width="800"></span></p>
 </div>
 </div></p>
-  			<a href="blog/2023/jbake_00.html"><h1>Notizen zu JBake</h1></a>
+  			<a href="blog/2023/jbake/jbake_00.html"><h1>Notizen zu JBake</h1></a>
   			<p>31 Januar 2023</p>
-  			<p><div class="sect2">
-<h3 id="jbake">JBake</h3>
+  			<p><div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
 <p><a href="https://jbake.org/">JBake</a> ist ein Generator statischer Webseiten. Dabei werden aus verschiedenen Quelldateien (Asciidoc, Markdown, HTML) statische HTML-Seiten auf dem lokalen Rechner erzeugt. Die fertigen Seiten werden dann per FTP z.B. auf gemieteten Webspace übertragen und von einem Webserver angezeigt. <br>
 Statische Webseiten sind lediglich eine Sammlung von Dateien und lassen sich mit minimalem Aufwand hosten. HTML- und CSS-Elemente werden direkt bei einer Veränderung des Codes gerendert und erst nach diesem <em>"Prerendering"</em> auf dem Webserver bereitgestellt. Dadurch wird die Performance des Webauftrittes erhöht, die Komplexität ist generell geringer und die statischen Seiten bieten keine Angriffspunkte, wie dies zum Beispiel bei einem CMS (z.B. Wordpress) der Fall ist.</p>
 </div>
-<div class="sect3">
-<h4 id="jbake_quickstart">JBake Quickstart</h4>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel2">
+<li><a href="#_jbake_quickstart">1. JBake Quickstart</a></li>
+<li><a href="#_jbake_projektverzeichnis">2. JBake Projektverzeichnis</a></li>
+<li><a href="#_jbake_properties">3. JBake Properties</a></li>
+<li><a href="#_jbake_templates">4. JBake Templates</a></li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jbake_quickstart">1. JBake Quickstart</h3>
 <div class="paragraph">
 <p>Die Dokumentation für JBake 2.6.7 enthält einen <a href="https://jbake.org/docs/2.6.7/#quickstart_guide">Quickstart Guide</a>, in dem beschrieben ist, wie mit wenigen Befehlen ein neues JBake Projekt erzeugt werden kann. Die folgenden Konsolenbefehle reichen dafür aus:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nv">$ </span><span class="nb">mkdir </span>project        <b class="conum">(1)</b>
-<span class="nv">$ </span><span class="nb">cd </span>project
-<span class="nv">$ </span>jbake <span class="nt">-i</span>             <b class="conum">(2)</b>
-<span class="o">(</span><span class="nv">$ </span>ODER: jabake <span class="nt">-i</span> <span class="nt">-t</span> groovy mit Groovy-Templates<span class="o">)</span>
-<span class="nv">$ </span>jbake <span class="nt">-b</span> <span class="nt">-s</span>          <b class="conum">(3)</b></code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">$ mkdir project        <i class="conum" data-value="1"></i><b>(1)</b>
+$ cd project
+$ jbake -i             <i class="conum" data-value="2"></i><b>(2)</b>
+($ ODER: jabake -i -t groovy mit Groovy-Templates)
+$ jbake -b -s          <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
-<ol>
-<li>
-<p>Anlegen eines Projektverzeichnises und Wechsel in dieses Verzeichnis.</p>
-</li>
-<li>
-<p>Initialisieren des Projektes (Defaulttemplatesprache ist <em>freemarker</em>, wenn Groovy-Templates verwendet werden sollen mit dem Zusatz <em>-t groovy</em>)</p>
-</li>
-<li>
-<p>Fertigstellen der vorhandenen Seiten und Starten des internen Servers. Die Seiten können nun im Browser unter der Adresse <strong><a href="http://localhost:8820" class="bare">http://localhost:8820</a></strong> (oder einem anderen Port, wenn dies in der properties-Datei angegeben ist.) angezeigt werden. Der JBake Server läuft im <em>Watch-Mode</em> und aktualisiert die bearbeiteten Seiten selbständig.</p>
-</li>
-</ol>
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Anlegen eines Projektverzeichnises und Wechsel in dieses Verzeichnis.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Initialisieren des Projektes (Defaulttemplatesprache ist <em>freemarker</em>, wenn Groovy-Templates verwendet werden sollen mit dem Zusatz <em>-t groovy</em>)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Fertigstellen der vorhandenen Seiten und Starten des internen Servers. Die Seiten können nun im Browser unter der Adresse <strong><a href="http://localhost:8820" class="bare">http://localhost:8820</a></strong> (oder einem anderen Port, wenn dies in der properties-Datei angegeben ist.) angezeigt werden. Der JBake Server läuft im <em>Watch-Mode</em> und aktualisiert die bearbeiteten Seiten selbständig.</td>
+</tr>
+</table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="jbake_projektverzeichnis">JBake Projektverzeichnis</h4>
+<div class="sect2">
+<h3 id="_jbake_projektverzeichnis">2. JBake Projektverzeichnis</h3>
 <div class="paragraph">
 <p>JBake <a href="https://jbake.org/docs/2.6.7/#project_structure">Dokumentation zur Projektstruktur</a></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="txt">projektverzeichnis
+<pre class="prettyprint highlight"><code data-lang="txt">projektverzeichnis
 |-- assets
 |  |-- css
 |  |-- fonts
@@ -868,8 +1134,8 @@ Statische Webseiten sind lediglich eine Sammlung von Dateien und lassen sich mit
 </ul>
 </div>
 </div>
-<div class="sect3">
-<h4 id="jbake_properties">JBake Properties</h4>
+<div class="sect2">
+<h3 id="_jbake_properties">3. JBake Properties</h3>
 <div class="paragraph">
 <p>Die Erstellung der Webseiten lässt sich mit der Datei "<strong>jbake.properties</strong>" beeinflussen. Auf die einzelnen Einträge kann in den Templates mit Platzhaltern zugrgriffen werden. Sie ist in der <a href="https://jbake.org/docs/2.6.7/#configuration">JBake Dokumentation zur Konfiguration</a> beschrieben.</p>
 </div>
@@ -928,8 +1194,8 @@ template.feed.file=feed.gsp</p></td>
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="jbake_templates">JBake Templates</h4>
+<div class="sect2">
+<h3 id="_jbake_templates">4. JBake Templates</h3>
 <div class="paragraph">
 <p>JBake verwendet je nach Initialisierung eines Projektes verschiedene Sprachen in den Templates, die zur Erstellung der eigentlichen Webseiten verwendet werden. Das sind <em>Freemarker, Groovy, Thymeleaf oder Jade</em>, die entsprechend in den Templates eingebettet sind.</p>
 </div>
@@ -937,6 +1203,114 @@ template.feed.file=feed.gsp</p></td>
 <p>Es sind Templates für verschiedene Seiten enthalten, die nicht direkt dem zu erstellenden Content zuzuordnen sind, z.B. <em>index, archive, feed</em> oder <em>sitemap</em>. Jede dieser Dateien kann beim rendern der Seiten übersprungen werden. Dazu werden sie in der Konfigurationsdatei deaktiviert (z.B. <em>render.archive=false</em>). <br>
 Weitere Templates werden zur Erzeugung von z.B. <em>header, footer</em> und <em>menu</em> verwendet. Diese sind in den Seiten-Templates inkludiert. <br>
 Weitere Konfigurationsmöglichkeiten sind in der <a href="https://jbake.org/docs/2.6.7/#configuration">JBake Dokumentation zur Konfiguration</a> beschrieben.</p>
+</div>
+</div></p>
+  			<a href="blog/2022/reference_virtualenv.html"><h1>Virtuelle Umgebungen in Python</h1></a>
+  			<p>29 September 2022</p>
+  			<p><div id="preamble">
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Bei der Entwicklung mit Python immer mit virtuellen Umgebungen
+(Virtual Environments, kurz „venv“) arbeiten.<br></p>
+</li>
+<li>
+<p>Eine virtuelle Umgebung enthält den Python-Interpreter und alle für das Projekt importierten Module in einem Unterverzeichnis, unabhängig davon, welche Version des Interpreters und welche Module auf dem Entwicklungs-System vorhanden sind.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Seit Python 3.3 gehört das venv-Modul zum Lieferumfang; eine neue virtuelle Umgebung mit dem Namen <strong>venv</strong> entsteht mit nur
+einem Befehl: <br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">python3 -m venv venv     <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>python3 -m venv &lt;Name des Verzeichnisses&gt; In diesem Beispiel liegt das Verzeichnis <em>venv</em> unterhalb des Verzeichnisses, in dem der Befehl ausgeführt wurde.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Aktivierung des venv der ­folgende Befehl:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">source venv/bin/activate    <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Unter Windows: venv\Scripts\activate.bat</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Jetzt können beliebige Python-Modul installiert/deinstalliert werden.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">pip3 install &lt;modulname&gt;
+pip3 uninstall &lt;modulname&gt;</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Nach der Installation ist das Modul im virtuellen Environment zu finden (unterhalb von <em>venv\Lib\site-packages</em>).</p>
+</li>
+<li>
+<p>Um das virtuelle Environment wieder zu deaktivieren reicht <strong>"deactivate"</strong></p>
+</li>
+<li>
+<p>Um es zu löschen muss nur der Ordner (z.B. <em>venv</em>) gelöscht werden.</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel1">
+<li><a href="#_requirements">1. Requirements</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_requirements">1. Requirements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die für ein Projekt installierten Module werden in einer Datei <strong>requirements.txt</strong> zusammengestellt.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">pip3 freeze &gt; requirements.txt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Diese Datei wird mit dem Projekt ausgeliefert. Auf dem Zielsystem muss dann,um alle notwendigen Module zu installieren, lediglich folgendes ausgeführt werden:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">pip3 install -r requirements.txt
+(oder)
+pip3 install -r requirements.txt --user  <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Außerhalb eines virtuellen Environments werden Module nur im User-Verzeichnis und nicht global installiert, wenn <em>--user</em> angegeben worden ist.</td>
+</tr>
+</table>
 </div>
 </div>
 </div></p>

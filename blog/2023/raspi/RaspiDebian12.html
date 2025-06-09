@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>RaspberryPi OS auf Bookworm updaten</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../../css/base.css" rel="stylesheet">
+    <link href="../../../css/prettify.css" rel="stylesheet">
+    <link href="../../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../../"><a href="index.html"><img src="../../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../../pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../../pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../../pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../../pages/photovoltaic/recipe.html">Rezepte</a></li>
+              </ul>
+            </li>
+            <li><a href="../../../archive.html">Notizen</a></li>
+            <li><a href="../../../impressum.html">Impressum</a></li>
+            <li><a href="../../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>RaspberryPi OS auf Bookworm updaten</h1>
+	</div>
+
+	<p><em>16 September 2023</em></p>
+
+	<p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Aktuell basiert die "stable" Version des <a href="https://www.raspberrypi.com/software" class="bare">https://www.raspberrypi.com/software</a> [Raspberry Pi OS] noch auf Debian Bullseye (Debian 11) und es ist nicht sicher, wann ein Upgrade erfolgen wird. Mit folgenden Schritten kann man auf die neue Version "Bookworm" upgraden.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Inhalt</div>
+<ul class="sectlevel1">
+<li><a href="#_upgrade_via_terminal">1. Upgrade via Terminal</a>
+<ul class="sectlevel2">
+<li><a href="#_altes_system_aktualisieren">1.1. Altes System aktualisieren</a></li>
+<li><a href="#_sourcen_anpassen">1.2. Sourcen anpassen</a></li>
+<li><a href="#_geänderte_quellen_aktualisieren">1.3. Geänderte Quellen aktualisieren</a></li>
+<li><a href="#_die_distribution_aktualisieren">1.4. Die Distribution aktualisieren</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_upgrade_via_terminal">1. Upgrade via Terminal</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><em><strong>Als erstes ein Backup anlegen, Daten sichern usw. !!</strong></em></p>
+</div>
+<div class="sect2">
+<h3 id="_altes_system_aktualisieren">1.1. Altes System aktualisieren</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell">sudo apt update
+sudo apt upgrade</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sourcen_anpassen">1.2. Sourcen anpassen</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell">sudo nano /etc/apt/sources.list     <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In der Datei /etc/apt/sources.list alle Vorkommen von "bullseye" zu "bookworm" ändern und die einzelnen Zeilen um "<em>&#8230;&#8203;-firmware</em>" Einträge ergänzen.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Das Ergenis sieht dann etwa so aus:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell">deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_geänderte_quellen_aktualisieren">1.3. Geänderte Quellen aktualisieren</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Die Fragen, die während des Update-Vorganges im Terminal autauchen jeweils mit den Default-Werten (Enter) bestätigen.</p>
+</li>
+<li>
+<p>Die Änderungs Protokolle mit "q" beenden.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell">sudo apt update
+sudo apt upgrade</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_die_distribution_aktualisieren">1.4. Die Distribution aktualisieren</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="shell">sudo apt dist-upgrade</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Neu Starten (reboot)</p>
+</li>
+<li>
+<p>Die neue Version (12) kann jetzt überprüft werden:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cat /etc/debian_version</pre>
+</div>
+</div>
+</div>
+</div>
+</div></p>
+
+	<hr />
+	
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../../js/bootstrap.min.js"></script>
+    <script src="../../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

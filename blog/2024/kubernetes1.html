@@ -48,11 +48,12 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li class="dropdown-header">Dokumentation</li>
-                <li><a href="../../posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li><a href="../../pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Projekte</li>
-                <li><a href="../../photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
-                <li><a href="../../mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../pages/photovoltaic/recipe.html">Rezepte</a></li>
               </ul>
             </li>
             <li><a href="../../archive.html">Notizen</a></li>
@@ -98,55 +99,55 @@
 <div class="listingblock">
 <div class="title"><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/">kubectl - Debian - Repository</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">sudo </span>apt-get update
-<span class="c"># apt-transport-https may be a dummy package; if so, you can skip that package</span>
-<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> apt-transport-https ca-certificates curl
+<pre class="prettyprint highlight"><code data-lang="shell">sudo apt-get update
+# apt-transport-https may be a dummy package; if so, you can skip that package
+sudo apt-get install -y apt-transport-https ca-certificates curl
 
-<span class="c"># Download the public signing key for the Kubernetes package repositories. The same signing key is used for all repositories so you can disregard the version in the URL:</span>
+# Download the public signing key for the Kubernetes package repositories. The same signing key is used for all repositories so you can disregard the version in the URL:
 
-<span class="c"># If the folder `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.</span>
-<span class="c"># sudo mkdir -p -m 755 /etc/apt/keyrings</span>
+# If the folder `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
+# sudo mkdir -p -m 755 /etc/apt/keyrings
 
-curl <span class="nt">-fsSL</span> https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | <span class="nb">sudo </span>gpg <span class="nt">--dearmor</span> <span class="nt">-o</span> /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-<span class="c"># Update apt package index, then install kubectl:</span>
+# Update apt package index, then install kubectl:
 
-<span class="nb">sudo </span>apt-get update
-<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> kubectl</code></pre>
+sudo apt-get update
+sudo apt-get install -y kubectl</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title"><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-bash-completion">kubectl - bash - autocompletion</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">apt-get <span class="nb">install </span>bash-completion
-<span class="nb">source</span> /usr/share/bash-completion/bash_completion</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">apt-get install bash-completion
+source /usr/share/bash-completion/bash_completion</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title"><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-bash-completion">kubectl - bash - enable autocompletion - user</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="nb">echo</span> <span class="s1">'source &lt;(kubectl completion bash)'</span> <span class="o">&gt;&gt;</span>~/.bashrc
+<pre class="prettyprint highlight"><code data-lang="shell">echo 'source &lt;(kubectl completion bash)' &gt;&gt;~/.bashrc
 
-<span class="c"># Wenn es keinen alias gibt:</span>
-<span class="nb">echo</span> <span class="s1">'alias k=kubectl'</span> <span class="o">&gt;&gt;</span>~/.bashrc
+# Wenn es keinen alias gibt:
+echo 'alias k=kubectl' &gt;&gt;~/.bashrc
 
-<span class="c"># Wenn der alias angelegt ist</span>
-<span class="nb">echo</span> <span class="s1">'complete -o default -F __start_kubectl k'</span> <span class="o">&gt;&gt;</span>~/.bashrc
+# Wenn der alias angelegt ist
+echo 'complete -o default -F __start_kubectl k' &gt;&gt;~/.bashrc
 
-<span class="nb">source</span> ~/.bashrc</code></pre>
+source ~/.bashrc</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title"><a href="https://minikube.sigs.k8s.io/docs/start/">Minikube - Installation - Debian</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">curl <span class="nt">-LO</span> https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
-<span class="nb">sudo </span>dpkg <span class="nt">-i</span> minikube_latest_amd64.deb</code></pre>
+<pre class="prettyprint highlight"><code data-lang="shell">curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+sudo dpkg -i minikube_latest_amd64.deb</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title"><a href="https://minikube.sigs.k8s.io/docs/start/">Minikube - start - stop cluster</a></div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">minikube start
+<pre class="prettyprint highlight"><code data-lang="shell">minikube start
 
 minikube stop</code></pre>
 </div>

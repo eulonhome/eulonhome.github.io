@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+    <title>API-Key Authentifizierung Spring Boot 3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="publisher" content="Christoph Till">
+    <meta name="copyright" content="Christoph Till">
+    <meta name="author" content="Christoph Till">
+    <meta name="generator" content="Eulon">
+    <meta http-equiv="content-language" content="de">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="DC.Creator" content="Christoph Till">
+    <meta name="DC.Publisher" content="Christoph Till">
+    <meta name="DC.Rights" content="Christoph Till">
+    <meta name="DC.Description" content="Private Webseite">
+    <meta name="DC.Language" content="de">
+
+    <!-- Le styles -->
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/prettify.css" rel="stylesheet">
+    <link href="../../css/eulon.css" rel="stylesheet">
+
+     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon; charset=binary">
+    <link rel="icon" href="favicon.ico" type="image/x-icon; charset=binary">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../../"><a href="index.html"><img src="../../img/logo.png" id="eulon" class="eulon_header_image"></a>
+        </div>
+        <div class="navbar-collapse collapse eulon_navbar">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Dokumentation</li>
+                <li><a href="../../pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Projekte</li>
+                <li><a href="../../pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../pages/photovoltaic/recipe.html">Rezepte</a></li>
+              </ul>
+            </li>
+            <li><a href="../../archive.html">Notizen</a></li>
+            <li><a href="../../impressum.html">Impressum</a></li>
+            <li><a href="../../privacy.html">Datenschutzerklärung</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+	<div class="page-header">
+		<h1>API-Key Authentifizierung Spring Boot 3</h1>
+	</div>
+
+	<p><em>07 Juni 2025</em></p>
+
+	<p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die Security-Konfiguration hat sich in <strong>Spring Security 6</strong> deutlich verändert. Beispielsweise wurde die  <em>WebSecurityConfigurerAdapter-Klasse</em> entfernt und durch eine <em>SecurityFilterChain-Bean</em> ersetzt. <br>
+Aus diesem Grund habe ich mein Vorgehen, mit dem ich einige Resourcen der Controller-Klasse meines Projektes mit einem Passwort absichern wollte, an dieser Stelle dokumentiert. <br></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Die Api eines Projektes enthält verschiedene Resourcen, die öffentlich zugänglich sind. Dazu werden administrative Resourcen benötigt, deren Verwendung mit einem Passwort, das in einen Api-Key eingebunden ist, abgesichert werden.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Dieses Projekt wird intern verwendet. Das Passwort ist in Form eines Hash in der Konfiguration abgelegt. Grundsätzlich und vor allem bei öffentlich bereitgestellten Resourcen sollten Passwörter in einem Key-Vault, z.B. einem Hashicorp Vault, einem <a href="https://openbao.org">OpenBao-Vault</a> oder etwas ähnlichem vorgehalten werden.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="projekt">1. Projekt</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Das Projekt realisiert einen Spring Boot Webservice. Der Service bietet frei zugängliche und administrative Resourcen an. Die administrativen Resourcen benötigen einen Api-Key zur Authentifikation des Benutzers.</p>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="/image/2025/{base-includedir}/API-Key_Authentifizierung_SpringBoot_3/image/bild_001.png" alt="bild 001" width="550">
+</div>
+<div class="title">Abbildung 1. <a href="https://start.spring.io">spring initializr</a></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="controller">2. Controller</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Der Controller enthält Resourcen, die keiner Zugangsbeschränkung unterliegen und administrative Resourcen, die mit einem Api-Key abgesichert werden.</p>
+</div>
+<div class="listingblock">
+<div class="title">Controller-Resourcen</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="code"><pre>   <span class="o">:</span>
+   <span class="o">:</span>
+
+   <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/doSomething"</span><span class="o">)</span>
+   <span class="kd">public</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">getDoSomething</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="s">"This is a public resource."</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/internal/doAdmin"</span><span class="o">)</span>
+   <span class="kd">public</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">getDoAdmin</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="s">"This is a a protected resource."</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="o">:</span>
+   <span class="o">:</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="konfiguration">3. Konfiguration</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">Configuration-SecurityFilterChain</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="code"><pre><span class="o">:</span>
+<span class="o">:</span>
+
+<span class="nd">@Configuration</span>
+<span class="nd">@EnableWebSecurity</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SecurityConfiguration</span>
+<span class="o">{</span>
+
+   <span class="kd">private</span> <span class="kd">final</span> <span class="nc">ApiKeyAuthenticationFilter</span> <span class="n">authenticationFilter</span><span class="o">;</span>   <i class="conum" data-value="1"></i><b>(1)</b>
+
+   <span class="nd">@Bean</span>
+   <span class="kd">public</span> <span class="nc">SecurityFilterChain</span> <span class="nf">securityFilterChain</span><span class="o">(</span> <span class="nc">HttpSecurity</span> <span class="n">http</span> <span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+   <span class="o">{</span>
+      <span class="k">return</span> <span class="n">http</span>
+            <span class="o">.</span><span class="na">sessionManagement</span><span class="o">(</span> <span class="n">sess</span> <span class="o">-&gt;</span> <span class="n">sess</span><span class="o">.</span><span class="na">sessionCreationPolicy</span><span class="o">(</span> <span class="nc">SessionCreationPolicy</span><span class="o">.</span><span class="na">STATELESS</span> <span class="o">)</span> <span class="o">)</span>     <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="o">.</span><span class="na">formLogin</span><span class="o">(</span><span class="nl">AbstractHttpConfigurer:</span><span class="o">:</span><span class="n">disable</span><span class="o">)</span>  <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="o">.</span><span class="na">csrf</span><span class="o">(</span> <span class="nc">AbstractHttpConfigurer</span> <span class="o">::</span> <span class="n">disable</span> <span class="o">)</span>  <i class="conum" data-value="4"></i><b>(4)</b>
+            <span class="o">.</span><span class="na">securityMatcher</span><span class="o">(</span> <span class="s">"/**"</span> <span class="o">)</span>       <i class="conum" data-value="5"></i><b>(5)</b>
+            <span class="o">.</span><span class="na">authorizeHttpRequests</span><span class="o">(</span> <span class="n">registry</span> <span class="o">-&gt;</span> <span class="n">registry</span>
+                  <span class="o">.</span><span class="na">requestMatchers</span><span class="o">(</span> <span class="nc">AntPathRequestMatcher</span><span class="o">.</span><span class="na">antMatcher</span><span class="o">(</span> <span class="s">"/internal/**"</span> <span class="o">)</span> <span class="o">).</span><span class="na">authenticated</span><span class="o">()</span>        <i class="conum" data-value="6"></i><b>(6)</b>
+                  <span class="o">.</span><span class="na">anyRequest</span><span class="o">().</span><span class="na">permitAll</span><span class="o">()</span>     <i class="conum" data-value="7"></i><b>(7)</b>
+            <span class="o">)</span>
+            <span class="o">.</span><span class="na">addFilterBefore</span><span class="o">(</span> <span class="n">authenticationFilter</span><span class="o">,</span> <span class="nc">UsernamePasswordAuthenticationFilter</span><span class="o">.</span><span class="na">class</span> <span class="o">)</span>        <i class="conum" data-value="8"></i><b>(8)</b>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+   <span class="o">}</span>
+
+<span class="o">}</span>
+<span class="o">:</span>
+<span class="o">:</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>ApiKeyAuthenticationFilter ist ein Requestfilter, der den eingehenden Request anhand der Security-Regeln filtert und bei Bedarf die Authentifizierungslogik anwendet. Dazu wird die Methode "<em>doFilterInternal</em>" überschrieben, die als Parameter u.a. die FilterChain-Bean und den Request enthält.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Stateless Sessions stellen sicher, dass jeder Request neu authetifiziert wird, da keine Cookies verwendet werden.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Damit wird die Out-of-the-box Authentifizierung über ein Formular, d.h. die Weiterleitung auf eine Default-Loginseite verhindert.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Spring Security schützt standardmäßig vor CSRF-Angriffen für unsichere HTTP-Methoden, wie z. B. eine POST-Anfrage, sodass kein zusätzlicher Code erforderlich ist. Um POST-Anfragen durchführen zu können, muss CSRF disabled sein.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>hier kann festgelegt werden, für welche Endpunkte die Sicherheitskonfiguration gültig ist (in diesem Fall für alle Endpunkte).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Dieser Matcher legt fest, dass alle Resourcen, die "internal" in der Url enthalten authentifiziert werden müssen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Dieser Matcher legt fest, dass alle weiteren Resourcen keiner Authentifizierung unterliegen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Es wird sichergestellt, dass die individuelle Filterung immer vor der sonst an erster Stelle (default) stehenden User:Password Filterung durchgeführt wird.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="filterung">4. Filterung</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ApiKeyAuthenticationFilter erbt von einem Requestfilter, der den eingehenden Request anhand der Security-Regeln filtert und bei Bedarf die Authentifizierungslogik anwendet. Dazu wird die Methode "<em>doFilterInternal</em>" überschrieben.</p>
+</div>
+<div class="listingblock">
+<div class="title">Filterung-ApiKeyAuthenticationFilter</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="code"><pre><span class="o">:</span>
+<span class="o">:</span>
+<span class="nd">@Component</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ApiKeyAuthenticationFilter</span> <span class="kd">extends</span> <span class="nc">OncePerRequestFilter</span>
+<span class="o">{</span>
+
+   <span class="kd">private</span> <span class="kd">final</span> <span class="nc">ApiKeyAuthExtractor</span> <span class="n">extractor</span><span class="o">;</span>       <i class="conum" data-value="1"></i><b>(1)</b>
+
+   <span class="nd">@Override</span>
+   <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doFilterInternal</span><span class="o">(</span> <span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span>
+                                    <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span>
+                                    <span class="nc">FilterChain</span> <span class="n">filterChain</span> <span class="o">)</span> <span class="kd">throws</span> <span class="nc">ServletException</span><span class="o">,</span> <span class="nc">IOException</span>
+   <span class="o">{</span>
+      <span class="n">extractor</span><span class="o">.</span><span class="na">extract</span><span class="o">(</span> <span class="n">request</span> <span class="o">)</span>
+               <span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span> <span class="nc">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">()</span> <span class="o">::</span> <span class="n">setAuthentication</span> <span class="o">);</span>        <i class="conum" data-value="2"></i><b>(2)</b>
+
+      <span class="n">filterChain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span> <span class="o">);</span>
+   <span class="o">}</span>
+
+<span class="o">}</span>
+<span class="o">:</span>
+<span class="o">:</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Der Extractor ist die Klasse, die die Authentifizierung durchführt, d.h. in diesem Fall den übergebenen Api-Key überprüft.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Abhängig vom Ergebnis der Extractor-Klasse wird ein Request als authentifiziert bzw. nicht authentifiziert angesehen.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="authentifizierungs_handler">5. Authentifizierungs-Handler</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ApiKeyAuthExtractor ist ein Handler, der in der Methode "<em>extract</em>" in diesem Fall den im Request übergebenen Key mit einem vorhandenen Wert, z.B. aus einem Key-Vault oder Properties-File vergleicht und damit eine erfolgreiche/nicht erfolgreiche Authentifizierung anzeigt.</p>
+</div>
+<div class="listingblock">
+<div class="title">Authentifizierung-ApiKeyAuthExtractor</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+</pre></td><td class="code"><pre><span class="o">:</span>
+<span class="o">:</span>
+   <span class="nd">@Value</span><span class="o">(</span><span class="s">"${security.key}"</span><span class="o">)</span>
+   <span class="kd">private</span> <span class="nc">String</span> <span class="n">apiKey</span><span class="o">;</span>
+
+   <span class="kd">public</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Authentication</span><span class="o">&gt;</span> <span class="nf">handle</span><span class="o">(</span> <span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+      <span class="nc">String</span> <span class="n">providedKey</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getHeader</span><span class="o">(</span><span class="s">"api-key"</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">providedKey</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="n">providedKey</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">apiKey</span><span class="o">))</span>
+         <span class="k">return</span> <span class="nc">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">();</span>
+
+      <span class="k">return</span> <span class="nc">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="k">new</span> <span class="nc">ApiKeyAuthentication</span><span class="o">(</span> <span class="n">providedKey</span><span class="o">,</span> <span class="nc">AuthorityUtils</span><span class="o">.</span><span class="na">NO_AUTHORITIES</span><span class="o">));</span>
+   <span class="o">}</span>
+<span class="o">:</span>
+<span class="o">:</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="authentifizierungs_objekt">6. Authentifizierungs-Objekt</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ApiKeyAuthentication ist ein Authetifizierungs-Object, d.h. ein Token der bei einer erfolgreichen Authetifizierung erzeugt wird, d.h. wenn im Requestheader ein korrekter API-Schlüssel gefunden wird.</p>
+</div>
+<div class="listingblock">
+<div class="title">Authentifizierung-ApiKeyAuthentication</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="code"><pre><span class="o">:</span>
+<span class="o">:</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ApiKeyAuthentication</span> <span class="kd">extends</span> <span class="nc">AbstractAuthenticationToken</span>
+<span class="o">{</span>
+   <span class="kd">private</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">apiKey</span><span class="o">;</span>
+
+   <span class="kd">public</span> <span class="nf">ApiKeyAuthentication</span><span class="o">(</span><span class="nc">String</span> <span class="n">apiKey</span><span class="o">,</span> <span class="nc">Collection</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">GrantedAuthority</span><span class="o">&gt;</span> <span class="n">authorities</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">super</span><span class="o">(</span><span class="n">authorities</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">apiKey</span> <span class="o">=</span> <span class="n">apiKey</span><span class="o">;</span>
+      <span class="n">setAuthenticated</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">getCredentials</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">getPrincipal</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">apiKey</span><span class="o">;</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+<span class="o">:</span>
+<span class="o">:</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div></p>
+
+	<hr />
+	
+
+    </div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2025 Eulon (<a href="http://jbake.org">JBake v2.6.7)</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/prettify.js"></script>
+    
+  </body>
+</html>
+
+

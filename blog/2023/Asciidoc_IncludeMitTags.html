@@ -48,11 +48,12 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Themen <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li class="dropdown-header">Dokumentation</li>
-                <li><a href="../../posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
+                <li><a href="../../pages/posaunenchor/posaunenchor.html">Webseite des Posaunenchores Urberach</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Projekte</li>
-                <li><a href="../../photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
-                <li><a href="../../mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../pages/photovoltaic/photovoltaic.html">Messwerterfassung einer Photovoltaikanlage</a></li>
+                <li><a href="../../pages/mp3db/mp3db.html">MP3-Datenbank (CRUD Python Übungsprojekt)</a></li>
+                <li><a href="../../pages/photovoltaic/recipe.html">Rezepte</a></li>
               </ul>
             </li>
             <li><a href="../../archive.html">Notizen</a></li>
@@ -71,55 +72,42 @@
 
 	<p><em>02 April 2023</em></p>
 
-	<p><div class="sect2">
-<h3 id="quellcode_mit_tags_versehen">Quellcode mit "Tags" versehen</h3>
-<div class="ulist">
-<ul>
-<li>
+	<p><div class="paragraph">
 <p>Quellcodeabschnitte werden mit Kommentarzeichen und <strong>"tag:name[]</strong>", bzw. <strong>"end:name[]</strong>" unterteilt.</p>
-</li>
-</ul>
 </div>
 <div class="listingblock">
 <div class="title">HelloWorld.java</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="o">{</span>
-    <span class="c1">// tag::mainMethod[]</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World!"</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="c1">// end::mainMethod[]</span>
-<span class="o">}</span></code></pre>
+<pre class="prettyprint highlight"><code data-lang="java">public class HelloWorld {
+    // tag::mainMethod[]
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+    // end::mainMethod[]
+}</code></pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
+<div class="paragraph">
 <p>Der tag-Abschnitt kann dann im Asciidoc-Test eingefügt werden</p>
-</li>
-</ul>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre> [source,java]
+<pre class="prettyprint highlight"><code data-lang="txt"> [source,java]
  ----
  include::HelloWorld.java[tags=mainMethod]
- ----</pre>
+ ----</code></pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>das ergibt dann</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>das ergibt dann in der Dokumentation</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>    public static void main(String[] args) {
+<pre class="prettyprint highlight"><code data-lang="asciidoc">Text vor dem Tag
+    public static void main(String[] args) {
         System.out.println("Hello World!");
-    }</pre>
-</div>
+    }
+Text nach dem Tag</code></pre>
 </div>
 </div></p>
 
